@@ -25,6 +25,8 @@ public class Assets
     public static BufferedImage rockRight;
     public static BufferedImage tree;
 
+    public static BufferedImage knight_frame1;
+
     /*! \fn public static void Init()
         \brief Functia initializaza referintele catre elementele grafice utilizate.
 
@@ -35,9 +37,10 @@ public class Assets
     {
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
         SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/PaooGameSpriteSheet.png"));
+        SpriteSheet knight= new SpriteSheet(ImageLoader.LoadImage("/textures/knight-sprite-sheet.png"));
 
             /// Se obtin subimaginile corespunzatoare elementelor necesare.
-        grass = sheet.crop(0, 0);
+  /*      grass = sheet.crop(0, 0);
         soil = sheet.crop(1, 0);
         water = sheet.crop(2, 0);
         mountain = sheet.crop(3, 0);
@@ -51,5 +54,7 @@ public class Assets
         rockDown = sheet.crop(3, 2);
         rockLeft = sheet.crop(0, 3);
         rockRight = sheet.crop(1, 3);
+        */
+        knight_frame1=sheet.crop(0,0);
     }
 }
