@@ -55,6 +55,6 @@ public class Assets
         rockLeft = sheet.crop(0, 3);
         rockRight = sheet.crop(1, 3);
         */
-        knight_frame1=sheet.crop(0,0);
+        knight_frame1=knight.crop(0,0);
     }
 }
