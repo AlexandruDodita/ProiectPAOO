@@ -241,7 +241,9 @@ public class Game implements Runnable
           */
 
        //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
-
+        g = bs.getDrawGraphics();
+        g.setColor(Color.PINK);
+        g.fillRect(0, 0, GameWindow.WIDTH, GameWindow.HEIGHT);
 
             // end operatie de desenare
             /// Se afiseaza pe ecran
