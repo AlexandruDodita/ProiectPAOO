@@ -37,7 +37,10 @@ public class Assets
     {
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
         SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/PaooGameSpriteSheet.png"));
-        SpriteSheet knight= new SpriteSheet(ImageLoader.LoadImage("/textures/knight-sprite-sheet.png"));
+        SpriteSheet playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/playerIdle.png"));
+        SpriteSheet playerRunLeft=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunLeft.png"));
+        SpriteSheet playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunRight.png"));
+
 
             /// Se obtin subimaginile corespunzatoare elementelor necesare.
   /*      grass = sheet.crop(0, 0);
@@ -55,6 +58,6 @@ public class Assets
         rockLeft = sheet.crop(0, 3);
         rockRight = sheet.crop(1, 3);
         */
-        knight_frame1=knight.crop(0,0);
+
     }
 }

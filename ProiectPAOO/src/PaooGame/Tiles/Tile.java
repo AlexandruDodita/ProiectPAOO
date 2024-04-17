@@ -13,11 +13,7 @@ public class Tile
 
         /// De remarcat ca urmatoarele dale sunt statice si publice. Acest lucru imi permite sa le am incarcate
         /// o singura data in memorie
-    public static Tile grassTile        = new GrassTile(0);     /*!< Dala de tip iarba*/
-    public static Tile mountainTile     = new MountainTile(1);  /*!< Dala de tip munte/piatra*/
-    public static Tile waterTile        = new WaterTile(2);     /*!< Dala de tip apa*/
-    public static Tile treeTile         = new TreeTile(3);      /*!< Dala de tip copac*/
-    public static Tile soilTile         = new SoilTile(4);      /*!< Dala de tip sol/pamant*/
+
 
 
     public static final int TILE_WIDTH  = 48;                       /*!< Latimea unei dale.*/

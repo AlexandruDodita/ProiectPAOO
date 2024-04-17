@@ -6,6 +6,8 @@ import PaooGame.Tiles.Tile;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 /*! \class Game
     \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
@@ -40,9 +42,10 @@ import java.awt.image.BufferStrategy;
         - public synchronized void start(); //metoda publica de pornire a jocului
         - public synchronized void stop()   //metoda publica de oprire a jocului
  */
-public class Game implements Runnable
+public class Game implements Runnable,KeyListener
 {
     private GameWindow      wnd;        /*!< Fereastra in care se va desena tabla jocului*/
+    private Player player;
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
@@ -97,6 +100,8 @@ public class Game implements Runnable
         wnd.BuildGameWindow();
             /// Se incarca toate elementele grafice (dale)
         Assets.Init();
+        player = new Player();
+        wnd.GetCanvas().addKeyListener(this);
     }
 
     /*! \fn public void run()
@@ -205,53 +210,82 @@ public class Game implements Runnable
 
         Metoda este declarata privat deoarece trebuie apelata doar in metoda run()
      */
-    private void Draw()
-    {
-            /// Returnez bufferStrategy pentru canvasul existent
+    private void Draw() {
+        /// Returnez bufferStrategy pentru canvasul existent
         bs = wnd.GetCanvas().getBufferStrategy();
-            /// Verific daca buffer strategy a fost construit sau nu
-        if(bs == null)
-        {
-                /// Se executa doar la primul apel al metodei Draw()
-            try
-            {
-                    /// Se construieste tripul buffer
+        /// Verific daca buffer strategy a fost construit sau nu
+        if (bs == null) {
+            /// Se executa doar la primul apel al metodei Draw()
+            try {
+                /// Se construieste tripul buffer
                 wnd.GetCanvas().createBufferStrategy(3);
                 return;
-            }
-            catch (Exception e)
-            {
-                    /// Afisez informatii despre problema aparuta pentru depanare.
+            } catch (Exception e) {
+                /// Afisez informatii despre problema aparuta pentru depanare.
                 e.printStackTrace();
             }
         }
-            /// Se obtine contextul grafic curent in care se poate desena.
+        /// Se obtine contextul grafic curent in care se poate desena.
         g = bs.getDrawGraphics();
-            /// Se sterge ce era
+        /// Se sterge ce era
         g.clearRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
 
         g.setColor(Color.PINK);
         g.fillRect(0, 0, GameWindow.WIDTH, GameWindow.HEIGHT);
 
-            /// operatie de desenare
-            // ...............
+        /// operatie de desenare
+        // ...............
       /*      Tile.grassTile.Draw(g, 0 * Tile.TILE_WIDTH, 0);
             Tile.soilTile.Draw(g, 1 * Tile.TILE_WIDTH, 0);
             Tile.waterTile.Draw(g, 2 * Tile.TILE_WIDTH, 0);
             Tile.mountainTile.Draw(g, 3 * Tile.TILE_WIDTH, 0);
             Tile.treeTile.Draw(g, 4 * Tile.TILE_WIDTH, 0);
             */
+        player.render(g);
+        //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
-       //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
-
-            // end operatie de desenare
-            /// Se afiseaza pe ecran
+        // end operatie de desenare
+        /// Se afiseaza pe ecran
         bs.show();
 
-            /// Elibereaza resursele de memorie aferente contextului grafic curent (zonele de memorie ocupate de
-            /// elementele grafice ce au fost desenate pe canvas).
+        /// Elibereaza resursele de memorie aferente contextului grafic curent (zonele de memorie ocupate de
+        /// elementele grafice ce au fost desenate pe canvas).
         g.dispose();
     }
-}
+
+    //implementarea metodelor pt keylistener
+    @Override
+        public void keyPressed(KeyEvent e)
+        {
+            int keyCode = e.getKeyCode();
+            if (keyCode == KeyEvent.VK_A) {
+                // tasta A misca jucatorul la stanga
+                player.moveLeft();
+            } else if (keyCode == KeyEvent.VK_D) {
+                // D misca la dreapta
+                player.moveRight();
+            } else if (keyCode == KeyEvent.VK_W) {
+                // W jucatorul sare
+                player.jump();
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D)
+        {
+            //cand tasta A sau D eliberata se opreste din alergat
+            player.stopRunning();
+        }
+    }
+
+        @Override
+        public void keyTyped(KeyEvent e) {
+        // implementare daca o tasta a fost tastata ( apasata + eliberata )
+        // nu e nevoie momentan
+    }
+
+    }
 
