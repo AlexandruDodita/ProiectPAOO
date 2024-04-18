@@ -267,7 +267,7 @@ public class Game implements Runnable,KeyListener
                 player.moveRight();
             } else if (keyCode == KeyEvent.VK_W) {
                 // W jucatorul sare
-                player.jump();
+                //player.jump();
             }
         }
 

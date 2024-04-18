@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
 public class Assets
 {
         /// Referinte catre elementele grafice (dale) utilizate in joc.
-    public static BufferedImage playerLeft;
+ /*   public static BufferedImage playerLeft;
     public static BufferedImage playerRight;
     public static BufferedImage soil;
     public static BufferedImage grass;
@@ -23,9 +23,13 @@ public class Assets
     public static BufferedImage rockDown;
     public static BufferedImage rockLeft;
     public static BufferedImage rockRight;
-    public static BufferedImage tree;
+    public static BufferedImage tree;*/
 
-    public static BufferedImage knight_frame1;
+    public static SpriteSheet playerIdle;
+    public static SpriteSheet playerRunLeft;
+    public static SpriteSheet playerRunRight;
+
+   // public static BufferedImage knight_frame1;
 
     /*! \fn public static void Init()
         \brief Functia initializaza referintele catre elementele grafice utilizate.

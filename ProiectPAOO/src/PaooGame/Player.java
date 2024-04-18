@@ -13,10 +13,10 @@ public class Player {
     private int x, y; // pozitia personajului - nefolosita momentan
     private int speed = 7;
     private int jumpSpeed = 14;
-    private double gravity = 0.5;
+    //private double gravity = 0.5;
     private BufferedImage[] idleFrames; // animatii stare idle
-    private BufferedImage[] runFrames; // animatii stare run
-    private BufferedImage[] jumpFrames; // animatii jump
+    private BufferedImage[] moveLeftFrames; // animatii stare run
+    private BufferedImage[] moveRightFrames; // animatii jump
     private int numberIdleFrames = 6;
     private int numberRunFrames = 8;
     private int numberJumpFrames = 12;
@@ -32,7 +32,7 @@ public class Player {
     private boolean isIdle;
     private boolean isRunning;
     private boolean isJumping;
-    private boolean isFalling;
+   // private boolean isFalling;
 
     private int groundLevel;
 
@@ -41,17 +41,17 @@ public class Player {
         //frame-urile pentru idle sunt 6, run 8 si jump 12
 
         idleFrames = new BufferedImage[6];
-        runFrames = new BufferedImage[8];
-        jumpFrames = new BufferedImage[12];
+        moveLeftFrames = new BufferedImage[8];
+        moveRightFrames = new BufferedImage[12];
 
         for (int i = 0; i < 6; i++) {
             idleFrames[i] = playerIdle.cropMainChar(i, 0, frameWidth, frameHeight);
         }
         for (int i = 0; i < 8; i++) {
-            runFrames[i] = playerRunLeft.cropMainChar(i, 0, frameWidth, frameHeight);
+            moveLeftFrames[i] = playerRunLeft.cropMainChar(i, 0, frameWidth, frameHeight);
         }
         for (int i = 0; i < 12; i++) {
-            jumpFrames[i] = playerRunRight.cropMainChar(i, 0, frameWidth, frameHeight);
+            moveRightFrames[i] = playerRunRight.cropMainChar(i, 0, frameWidth, frameHeight);
         }
         //initializare date
 
@@ -116,19 +116,19 @@ public class Player {
         // verificare ca frame-ul curent sa nu treaca out of bounds
         if (isIdle && currentFrame >= 0 && currentFrame < idleFrames.length) {
             g.drawImage(idleFrames[currentFrame], x, y, null);
-        } else if (isRunning && currentFrame >= 0 && currentFrame < runFrames.length) {
-            g.drawImage(runFrames[currentFrame], x, y, null);
-        } else if (isJumping && currentFrame >= 0 && currentFrame < jumpFrames.length) {
-            g.drawImage(jumpFrames[currentFrame], x, y, null);
+        } else if (isRunning && currentFrame >= 0 && currentFrame < moveLeftFrames.length) {
+            g.drawImage(moveLeftFrames[currentFrame], x, y, null);
+        } else if (isJumping && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
+            g.drawImage(moveRightFrames[currentFrame], x, y, null);
         }
     }
 
     private BufferedImage getCurrentAnimationFrame()
     {
-        if (isJumping && currentFrame >= 0 && currentFrame < jumpFrames.length) {
-            return jumpFrames[currentFrame];
-        } else if (isRunning && currentFrame >= 0 && currentFrame < runFrames.length) {
-            return runFrames[currentFrame];
+        if (isJumping && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
+            return moveRightFrames[currentFrame];
+        } else if (isRunning && currentFrame >= 0 && currentFrame < moveLeftFrames.length) {
+            return moveLeftFrames[currentFrame];
         } else if (isIdle && currentFrame >= 0 && currentFrame < idleFrames.length) {
             return idleFrames[currentFrame];
         } else {
@@ -153,25 +153,7 @@ public class Player {
         isRunning = true;
     }
 
-    public void jump()
-    {
-        //System.out.println("Jump - isJumping: " + isJumping + ", isRunning: " + isRunning); //folosit pt debug, animatia de jump nu mergea deloc
-        if (!isJumping && !isRunning) {
-            // Dacă nu este deja în aer și nu este în mișcare orizontală
-            isIdle = false; // Personajul nu mai este în stare de idle
-            isRunning = false; // Nu este în stare de running
-            isJumping = true; // Este în stare de jump
-            y -= jumpSpeed; // Modific poziția y pentru a indica că personajul sare în sus
-        }
-        if (currentFrame == 0 && isJumping) {
-            // Săritura s-a încheiat, aduceți personajul înapoi la sol
-            y += jumpSpeed; // Modificați poziția y pentru a aduce personajul înapoi la sol
-            isJumping = false; // Personajul nu mai sare
-            isIdle = true; // Personajul revine în starea de idle
-        }
-    }
-
-    public void stopRunning()
+     public void stopRunning()
     {
         isRunning = false;
         isIdle = true;
