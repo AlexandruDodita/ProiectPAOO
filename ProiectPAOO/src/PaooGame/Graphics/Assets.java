@@ -1,5 +1,6 @@
 package PaooGame.Graphics;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /*! \class public class Assets
@@ -24,6 +25,7 @@ public class Assets
     public static BufferedImage rockLeft;
     public static BufferedImage rockRight;
     public static BufferedImage tree;*/
+    public static BufferedImage woodBox;
 
     public static SpriteSheet playerIdle;
     public static SpriteSheet playerRunLeft;
@@ -41,11 +43,10 @@ public class Assets
     {
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
         SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/PaooGameSpriteSheet.png"));
-        SpriteSheet playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/playerIdle.png"));
-        SpriteSheet playerRunLeft=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunLeft.png"));
-        SpriteSheet playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunRight.png"));
-
-
+        playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/playerIdle.png"));
+        playerRunLeft=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunLeft.png"));
+        playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunRight.png"));
+        SpriteSheet props=new SpriteSheet(ImageLoader.LoadImage("/textures/Props.png"));
             /// Se obtin subimaginile corespunzatoare elementelor necesare.
   /*      grass = sheet.crop(0, 0);
         soil = sheet.crop(1, 0);
@@ -62,6 +63,6 @@ public class Assets
         rockLeft = sheet.crop(0, 3);
         rockRight = sheet.crop(1, 3);
         */
-
+    woodBox=props.crop(2,0);
     }
 }

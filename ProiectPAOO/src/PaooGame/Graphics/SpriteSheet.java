@@ -11,11 +11,11 @@ import java.awt.image.BufferedImage;
 public class SpriteSheet
 {
     private BufferedImage       spriteSheet;              /*!< Referinta catre obiectul BufferedImage ce contine sprite sheet-ul.*/
-    private static final int    tileWidth   = 80;   /*!< Latimea unei dale din sprite sheet.*/
-    private static final int    tileHeight  = 90;   /*!< Inaltime unei dale din sprite sheet.*/
-    private static final int frameWidth = 128;
+    private static final int    tileWidth   = 74;   /*!< Latimea unei dale din sprite sheet.*/
+    private static final int    tileHeight  = 64;   /*!< Inaltime unei dale din sprite sheet.*/
+    private static final int frameWidth = 64;
 
-    private static final int frameHeight = 128;
+    private static final int frameHeight = 34;
 
     /*! \fn public SpriteSheet(BufferedImage sheet)
         \brief Constructor, initializeaza spriteSheet.
@@ -43,12 +43,8 @@ public class SpriteSheet
             /// se obtine inmultind numarul de ordine al dalei cu dimensiunea in pixeli a unei dale.
         return spriteSheet.getSubimage(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
     }
-    public BufferedImage cropMainChar(int frameX, int frameY, int frameWidth, int frameHeight) {
-        // Calculate the starting coordinates of the frame within the sprite sheet based on frameX and frameY
-        int startX = frameX * frameWidth;
-        int startY = frameY * frameHeight;
+    public BufferedImage cropMainChar(int x, int y, int frameWidth, int frameHeight) {
+        return spriteSheet.getSubimage(x*frameWidth,y*frameHeight,frameWidth,frameHeight);
 
-        // Use the calculated coordinates to crop the subimage from the sprite sheet
-        return spriteSheet.getSubimage(startX, startY, frameWidth, frameHeight);
     }
 }

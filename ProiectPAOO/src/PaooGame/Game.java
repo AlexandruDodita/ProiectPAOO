@@ -230,8 +230,7 @@ public class Game implements Runnable,KeyListener
         /// Se sterge ce era
         g.clearRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
 
-        g.setColor(Color.PINK);
-        g.fillRect(0, 0, GameWindow.WIDTH, GameWindow.HEIGHT);
+
 
         /// operatie de desenare
         // ...............
@@ -241,6 +240,7 @@ public class Game implements Runnable,KeyListener
             Tile.mountainTile.Draw(g, 3 * Tile.TILE_WIDTH, 0);
             Tile.treeTile.Draw(g, 4 * Tile.TILE_WIDTH, 0);
             */
+        Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
         player.render(g);
         //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
@@ -262,9 +262,11 @@ public class Game implements Runnable,KeyListener
             if (keyCode == KeyEvent.VK_A) {
                 // tasta A misca jucatorul la stanga
                 player.moveLeft();
+                System.out.println("Misc Stanga"); //debug
             } else if (keyCode == KeyEvent.VK_D) {
                 // D misca la dreapta
                 player.moveRight();
+                System.out.println("Misc Dreapta"); //debug
             } else if (keyCode == KeyEvent.VK_W) {
                 // W jucatorul sare
                 //player.jump();

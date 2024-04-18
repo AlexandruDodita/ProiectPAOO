@@ -14,10 +14,10 @@ public class Tile
         /// De remarcat ca urmatoarele dale sunt statice si publice. Acest lucru imi permite sa le am incarcate
         /// o singura data in memorie
 
+    public static Tile WoodBox= new WoodBox(0);
 
-
-    public static final int TILE_WIDTH  = 48;                       /*!< Latimea unei dale.*/
-    public static final int TILE_HEIGHT = 48;                       /*!< Inaltimea unei dale.*/
+    public static final int TILE_WIDTH  = 74;                       /*!< Latimea unei dale.*/
+    public static final int TILE_HEIGHT = 64;                       /*!< Inaltimea unei dale.*/
 
     protected BufferedImage img;                                    /*!< Imaginea aferenta tipului de dala.*/
     protected final int id;                                         /*!< Id-ul unic aferent tipului de dala.*/
