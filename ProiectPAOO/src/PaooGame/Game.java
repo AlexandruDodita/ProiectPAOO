@@ -2,7 +2,7 @@ package PaooGame;
 
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
-import PaooGame.Tiles.Tile;
+import PaooGame.Tiles.*;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -64,7 +64,7 @@ public class Game implements Runnable,KeyListener
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
 
 
-    private Tile tile; /*!< variabila membra temporara. Este folosita in aceasta etapa doar pentru a desena ceva pe ecran.*/
+    private Tile[] tileArray;
 
     /*! \fn public Game(String title, int width, int height)
         \brief Constructor de initializare al clasei Game.
@@ -93,17 +93,19 @@ public class Game implements Runnable,KeyListener
         Sunt construite elementele grafice (assets): dale, player, elemente active si pasive.
 
      */
-    private void InitGame()
-    {
-        wnd = new GameWindow("Schelet Proiect PAOO", 800, 600);
-            /// Este construita fereastra grafica.
+    private void InitGame() {
+        wnd = new GameWindow("Joc", 1920, 1080);
+        /// Este construita fereastra grafica.
         wnd.BuildGameWindow();
-            /// Se incarca toate elementele grafice (dale)
+        /// Se incarca toate elementele grafice (dale)
         Assets.Init();
         player = new Player();
         wnd.GetCanvas().addKeyListener(this);
+        tileArray = new Tile[10];
+        for (int i = 0; i < 10; i++) {
+            tileArray[i] = new WoodBox(i);
+        }
     }
-
     /*! \fn public void run()
         \brief Functia ce va rula in thread-ul creat.
 
@@ -202,7 +204,7 @@ public class Game implements Runnable,KeyListener
      */
     private void Update()
     {
-
+        player.update(tileArray);
     }
 
     /*! \fn private void Draw()
@@ -229,17 +231,11 @@ public class Game implements Runnable,KeyListener
         g = bs.getDrawGraphics();
         /// Se sterge ce era
         g.clearRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
-
+        g.drawImage(Assets.background, 0, 0, null);
 
 
         /// operatie de desenare
         // ...............
-      /*      Tile.grassTile.Draw(g, 0 * Tile.TILE_WIDTH, 0);
-            Tile.soilTile.Draw(g, 1 * Tile.TILE_WIDTH, 0);
-            Tile.waterTile.Draw(g, 2 * Tile.TILE_WIDTH, 0);
-            Tile.mountainTile.Draw(g, 3 * Tile.TILE_WIDTH, 0);
-            Tile.treeTile.Draw(g, 4 * Tile.TILE_WIDTH, 0);
-            */
         Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
         player.render(g);
         //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
@@ -288,6 +284,5 @@ public class Game implements Runnable,KeyListener
         // implementare daca o tasta a fost tastata ( apasata + eliberata )
         // nu e nevoie momentan
     }
-
-    }
+}
 

@@ -12,8 +12,8 @@ import java.awt.*;
  */
 public class GameWindow
 {
-    public static final int WIDTH = 800;
-    public static final int HEIGHT = 600;
+    public static final int WIDTH = 1920;
+    public static final int HEIGHT = 1080;
     private JFrame  wndFrame;       /*!< fereastra principala a jocului*/
     private String  wndTitle;       /*!< titlul ferestrei*/
     private int     wndWidth;       /*!< latimea ferestrei in pixeli*/

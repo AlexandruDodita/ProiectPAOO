@@ -26,7 +26,7 @@ public class Assets
     public static BufferedImage rockRight;
     public static BufferedImage tree;*/
     public static BufferedImage woodBox;
-
+    public static BufferedImage background;
     public static SpriteSheet playerIdle;
     public static SpriteSheet playerRunLeft;
     public static SpriteSheet playerRunRight;
@@ -42,7 +42,7 @@ public class Assets
     public static void Init()
     {
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
-        SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/PaooGameSpriteSheet.png"));
+      //  SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/PaooGameSpriteSheet.png"));
         playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/playerIdle.png"));
         playerRunLeft=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunLeft.png"));
         playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunRight.png"));
@@ -63,6 +63,7 @@ public class Assets
         rockLeft = sheet.crop(0, 3);
         rockRight = sheet.crop(1, 3);
         */
-    woodBox=props.crop(2,0);
+        woodBox=props.crop(2,0);
+        background=ImageLoader.LoadImage("/textures/background.png"); //background-ul e temporar
     }
 }
