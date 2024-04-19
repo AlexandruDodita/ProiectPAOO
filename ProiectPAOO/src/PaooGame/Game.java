@@ -94,7 +94,7 @@ public class Game implements Runnable,KeyListener
 
      */
     private void InitGame() {
-        wnd = new GameWindow("Joc", 1920, 1080);
+        wnd = new GameWindow("Knightly Order", 1500, 1250);
         /// Este construita fereastra grafica.
         wnd.BuildGameWindow();
         /// Se incarca toate elementele grafice (dale)
@@ -265,7 +265,11 @@ public class Game implements Runnable,KeyListener
                 System.out.println("Misc Dreapta"); //debug
             } else if (keyCode == KeyEvent.VK_W) {
                 // W jucatorul sare
-                //player.jump();
+                player.moveUp();
+                System.out.println("Misc Sus");
+            }else if(keyCode==KeyEvent.VK_S){
+                player.moveDown();
+                System.out.println("Misc Jos");
             }
         }
 

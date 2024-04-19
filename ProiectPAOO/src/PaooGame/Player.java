@@ -197,7 +197,18 @@ public class Player {
         isMovingLeft=false;
         isMovingRight = true;
     }
-
+    public void moveUp(){
+        y=y+speed;
+        isIdle=false;
+        isMovingRight=true;
+        isMovingLeft=false;
+    }
+    public void moveDown(){
+        y=y-speed;
+        isIdle=false;
+        isMovingLeft=false;
+        isMovingRight=true;
+    }
      public void stopRunning()
     {
         isMovingLeft = false;

@@ -1,6 +1,5 @@
 package PaooGame.Graphics;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /*! \class public class Assets
