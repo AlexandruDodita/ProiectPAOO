@@ -11,7 +11,7 @@ import PaooGame.Graphics.SpriteSheet.*; //probleme cu folosirea import-urilor
 import PaooGame.Tiles.*;
 
 public class Player {
-    private int x, y; // pozitia personajului - nefolosita momentan
+    private int x=250, y=0;
     private int speed = 7;
     private BufferedImage[] idleFrames;
     private BufferedImage[] moveLeftFrames;
@@ -20,8 +20,8 @@ public class Player {
     private int nrMoveRightFrames = 6;
     private int nrMoveLeftFrames = 6;
 
-    private static final int frameWidth = 64;
-    private static final int frameHeight = 34;
+    private static final int frameWidth = 133;
+    private static final int frameHeight = 71;
     private int currentFrame; // frame-ul curent din animatie
 
     private int frameDelay; //intarziere de frame-uri pentru animatii
@@ -29,6 +29,7 @@ public class Player {
     private int frameDelayCounter; //contor pentru a numara intarzierea de frame-uri
 
     private boolean isIdle;
+    private int groundLevel;
     private boolean isMovingLeft;
     private boolean isMovingRight;
 
@@ -59,6 +60,11 @@ public class Player {
         isMovingLeft = false;
         isMovingRight = false;
 
+
+
+
+        x = 0;
+        y = 900;
 
     }
 
@@ -96,7 +102,7 @@ public class Player {
 
 
     public void render(Graphics g) {
-        //System.out.println("Render - currentFrame: " + currentFrame); //debug pentru ca frame-urile totale depaseau frame-urile de pe ecran
+        System.out.println("Render - currentFrame: " + currentFrame); //debug pentru ca frame-urile totale depaseau frame-urile de pe ecran
         // Desenare player pe ecran
         // verificare ca frame-ul curent sa nu treaca out of bounds
         if (isIdle && currentFrame >= 0 && currentFrame < idleFrames.length) {
@@ -105,6 +111,8 @@ public class Player {
             g.drawImage(moveLeftFrames[currentFrame], x, y, null);
         } else if (isMovingRight && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
             g.drawImage(moveRightFrames[currentFrame], x, y, null);
+        }else{
+            stopRunning();
         }
     }
     public boolean checkCollision(Tile[] tiles) {
@@ -198,13 +206,13 @@ public class Player {
         isMovingRight = true;
     }
     public void moveUp(){
-        y=y+speed;
+        y=y-speed;
         isIdle=false;
         isMovingRight=true;
         isMovingLeft=false;
     }
     public void moveDown(){
-        y=y-speed;
+        y=y+speed;
         isIdle=false;
         isMovingLeft=false;
         isMovingRight=true;

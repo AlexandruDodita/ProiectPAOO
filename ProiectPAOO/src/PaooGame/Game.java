@@ -276,7 +276,7 @@ public class Game implements Runnable,KeyListener
         @Override
         public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D)
+        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_W)
         {
             //cand tasta A sau D eliberata se opreste din alergat
             player.stopRunning();
