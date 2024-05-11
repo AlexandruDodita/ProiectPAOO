@@ -15,6 +15,7 @@ public class Tile
         /// o singura data in memorie
 
     public static Tile WoodBox= new WoodBox(0);
+    public static Tile InvisTile=new invisTile(1);
 
     public static final int TILE_WIDTH  = 74;                       /*!< Latimea unei dale.*/
     public static final int TILE_HEIGHT = 64;                       /*!< Inaltimea unei dale.*/

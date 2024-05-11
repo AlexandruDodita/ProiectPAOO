@@ -11,7 +11,7 @@ import PaooGame.Graphics.SpriteSheet.*; //probleme cu folosirea import-urilor
 import PaooGame.Tiles.*;
 
 public class Player {
-    private int x=250, y=0;
+    private int x, y;
     private int speed = 7;
     private BufferedImage[] idleFrames;
     private BufferedImage[] moveLeftFrames;
@@ -32,6 +32,7 @@ public class Player {
     private int groundLevel;
     private boolean isMovingLeft;
     private boolean isMovingRight;
+    boolean CollisionOn;
 
 
 
@@ -59,8 +60,6 @@ public class Player {
         isIdle = true;
         isMovingLeft = false;
         isMovingRight = false;
-
-
 
 
         x = 0;
@@ -95,14 +94,16 @@ public class Player {
         }
 
 
-        if (isMovingLeft || isMovingRight) {
-            checkXCollision(tiles); // Verificăm coliziunile pe axa X când personajul se mișcă
+        if ((isMovingLeft || isMovingRight) && checkXCollision(tiles)) {
+            CollisionOn=true;
+            this.stopRunning();
+            moveDown();
         }
     }
 
 
     public void render(Graphics g) {
-        System.out.println("Render - currentFrame: " + currentFrame); //debug pentru ca frame-urile totale depaseau frame-urile de pe ecran
+       // System.out.println("Render - currentFrame: " + currentFrame); //debug pentru ca frame-urile totale depaseau frame-urile de pe ecran
         // Desenare player pe ecran
         // verificare ca frame-ul curent sa nu treaca out of bounds
         if (isIdle && currentFrame >= 0 && currentFrame < idleFrames.length) {
@@ -111,8 +112,6 @@ public class Player {
             g.drawImage(moveLeftFrames[currentFrame], x, y, null);
         } else if (isMovingRight && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
             g.drawImage(moveRightFrames[currentFrame], x, y, null);
-        }else{
-            stopRunning();
         }
     }
     public boolean checkCollision(Tile[] tiles) {
@@ -125,7 +124,7 @@ public class Player {
             }
 
             Rectangle tileBounds = new Rectangle(tile.GetId() * Tile.TILE_WIDTH, 0, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
-            System.out.println("Tile bounds: " + tileBounds);
+            //System.out.println("Tile bounds: " + tileBounds);
 
             if (playerBounds.intersects(tileBounds)) {
                 System.out.println("Collision detected with tile " + tile.GetId());
@@ -151,7 +150,7 @@ public class Player {
         } else if (isMovingRight) {
             playerBounds = new Rectangle(x + speed, y, frameWidth, frameHeight);
         }
-        System.out.println("Player bounds: " + playerBounds);
+        //System.out.println("Player bounds: " + playerBounds);
 
         for (Tile tile : tiles) {
             if (!tile.IsSolid()) {
@@ -159,18 +158,22 @@ public class Player {
             }
 
             Rectangle tileBounds = new Rectangle(tile.GetId() * Tile.TILE_WIDTH, 0, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
-            System.out.println("Tile bounds: " + tileBounds);
+            //System.out.println("Tile bounds: " + tileBounds);
 
             if (playerBounds.intersects(tileBounds)) {
-                if (isMovingLeft) {
-                    return true;
-                } else if (isMovingRight) {
+                System.out.println("Collision detected with tile " + tile.GetId());
+                if (isMovingLeft || isMovingRight) {
+                    isMovingLeft=false;
+                    isMovingRight=false;
+                    isIdle=true;
+                    moveDown();
                     return true;
                 }
             }
         }
 
         // Dacă nu s-a detectat nicio coliziune, return false
+        CollisionOn=false;
         return false;
     }
 

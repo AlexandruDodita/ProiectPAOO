@@ -101,9 +101,17 @@ public class Game implements Runnable,KeyListener
         Assets.Init();
         player = new Player();
         wnd.GetCanvas().addKeyListener(this);
+
+        //tileArray incarca primul rand de tile-uri. Momentan afisajul pe ecran al dalelor nu corespunde cu dalele puse in cod (Aka state-ul lor de solid, de aia s-a creat un invisTile pentru testare.
+        //De asemenea, hit-boxul (tileBounds folosit in Player.java) este mult prea mare comparativ cu tile-ul propiu-zis din ce se pare.
+        //Posibila solutie: Obtinerea unui tileArray sau chiar matrice care sa coindicda cu cum sunt afisate tile-urile pe harta, astfel incat programul sa poata prezice corect unde trebuie sa se opreasca.
         tileArray = new Tile[10];
-        for (int i = 0; i < 10; i++) {
-            tileArray[i] = new WoodBox(i);
+        for (int i = 0; i < 3; i++) {
+            tileArray[i] = new invisTile(i);
+        }
+        tileArray[3]=new WoodBox(3);
+        for (int i = 4; i < 10; i++) {
+            tileArray[i] = new invisTile(i);
         }
     }
     /*! \fn public void run()
@@ -255,30 +263,34 @@ public class Game implements Runnable,KeyListener
         public void keyPressed(KeyEvent e)
         {
             int keyCode = e.getKeyCode();
-            if (keyCode == KeyEvent.VK_A) {
-                // tasta A misca jucatorul la stanga
-                player.moveLeft();
-                System.out.println("Misc Stanga"); //debug
-            } else if (keyCode == KeyEvent.VK_D) {
-                // D misca la dreapta
-                player.moveRight();
-                System.out.println("Misc Dreapta"); //debug
-            } else if (keyCode == KeyEvent.VK_W) {
-                // W jucatorul sare
-                player.moveUp();
-                System.out.println("Misc Sus");
-            }else if(keyCode==KeyEvent.VK_S){
-                player.moveDown();
-                System.out.println("Misc Jos");
+            if(!player.CollisionOn) {
+                if (keyCode == KeyEvent.VK_A) {
+                    // tasta A misca jucatorul la stanga
+                    player.moveLeft();
+                    System.out.println("Misc Stanga"); //debug
+                } else if (keyCode == KeyEvent.VK_D) {
+                    // D misca la dreapta
+                    player.moveRight();
+                    System.out.println("Misc Dreapta"); //debug
+                } else if (keyCode == KeyEvent.VK_W) {
+                    // W jucatorul sare
+                    player.moveUp();
+                    System.out.println("Misc Sus");
+                } else if (keyCode == KeyEvent.VK_S) {
+                    player.moveDown();
+                    System.out.println("Misc Jos");
+                }
+            }else{
+                player.CollisionOn=false;
+                player.stopRunning();
             }
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
         int keyCode = e.getKeyCode();
-        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_W)
+        if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_S)
         {
-            //cand tasta A sau D eliberata se opreste din alergat
             player.stopRunning();
         }
     }
