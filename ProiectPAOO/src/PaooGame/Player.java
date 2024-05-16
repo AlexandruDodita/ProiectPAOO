@@ -94,11 +94,11 @@ public class Player {
         }
 
 
-        if ((isMovingLeft || isMovingRight) && checkXCollision(tiles)) {
+      /*  if ((isMovingLeft || isMovingRight) && checkXCollision(tiles)) {
             CollisionOn=true;
             this.stopRunning();
             moveDown();
-        }
+        }*/
     }
 
 

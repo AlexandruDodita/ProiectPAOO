@@ -5,10 +5,10 @@ package PaooGame.Tiles;
 import PaooGame.Graphics.Assets;
 
 
-public class WoodBox extends Tile
+public class WoodBoxO extends Tile
 {
 
-    public WoodBox(int id)
+    public WoodBoxO(int id)
     {
             /// Apel al constructorului clasei de baza
         super(Assets.woodBox, id);

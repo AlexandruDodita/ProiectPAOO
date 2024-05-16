@@ -2,6 +2,7 @@ package PaooGame;
 
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
+import PaooGame.Graphics.MapBuilder;
 import PaooGame.Tiles.*;
 
 import java.awt.*;
@@ -109,7 +110,7 @@ public class Game implements Runnable,KeyListener
         for (int i = 0; i < 3; i++) {
             tileArray[i] = new invisTile(i);
         }
-        tileArray[3]=new WoodBox(3);
+        tileArray[3]=new WoodBoxO(3);
         for (int i = 4; i < 10; i++) {
             tileArray[i] = new invisTile(i);
         }
@@ -244,7 +245,9 @@ public class Game implements Runnable,KeyListener
 
         /// operatie de desenare
         // ...............
-        Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
+        //Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
+        MapBuilder.mapBuilder();
+        MapBuilder.draw(g);
         player.render(g);
         //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 

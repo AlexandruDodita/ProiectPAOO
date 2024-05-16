@@ -14,7 +14,7 @@ public class Tile
         /// De remarcat ca urmatoarele dale sunt statice si publice. Acest lucru imi permite sa le am incarcate
         /// o singura data in memorie
 
-    public static Tile WoodBox= new WoodBox(0);
+    public static Tile WoodBox= new WoodBoxO(0);
     public static Tile InvisTile=new invisTile(1);
 
     public static final int TILE_WIDTH  = 74;                       /*!< Latimea unei dale.*/
@@ -52,7 +52,7 @@ public class Tile
         \param x Coordonata x in cadrul ferestrei unde sa fie desenata dala
         \param y Coordonata y in cadrul ferestrei unde sa fie desenata dala
      */
-    public void Draw(Graphics g, int x, int y)
+    public void Draw(Graphics g, int x, int y) //vreau sa modific draw-ul astfel incat sa incarce harta!!
     {
             /// Desenare dala
         g.drawImage(img, x, y, TILE_WIDTH, TILE_HEIGHT, null);

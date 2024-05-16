@@ -9,28 +9,14 @@ import java.awt.image.BufferedImage;
  */
 public class Assets
 {
-        /// Referinte catre elementele grafice (dale) utilizate in joc.
- /*   public static BufferedImage playerLeft;
-    public static BufferedImage playerRight;
-    public static BufferedImage soil;
-    public static BufferedImage grass;
-    public static BufferedImage mountain;
-    public static BufferedImage townGrass;
-    public static BufferedImage townGrassDestroyed;
-    public static BufferedImage townSoil;
-    public static BufferedImage water;
-    public static BufferedImage rockUp;
-    public static BufferedImage rockDown;
-    public static BufferedImage rockLeft;
-    public static BufferedImage rockRight;
-    public static BufferedImage tree;*/
+
     public static BufferedImage woodBox;
+    public static BufferedImage floorOne;
     public static BufferedImage background;
     public static SpriteSheet playerIdle;
     public static SpriteSheet playerRunLeft;
     public static SpriteSheet playerRunRight;
 
-   // public static BufferedImage knight_frame1;
 
     /*! \fn public static void Init()
         \brief Functia initializaza referintele catre elementele grafice utilizate.
@@ -45,24 +31,13 @@ public class Assets
         playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/playerIdle.png"));
         playerRunLeft=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunLeft.png"));
         playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunRight.png"));
-        SpriteSheet props=new SpriteSheet(ImageLoader.LoadImage("/textures/Props.png"));
-            /// Se obtin subimaginile corespunzatoare elementelor necesare.
-  /*      grass = sheet.crop(0, 0);
-        soil = sheet.crop(1, 0);
-        water = sheet.crop(2, 0);
-        mountain = sheet.crop(3, 0);
-        townGrass = sheet.crop(0, 1);
-        townGrassDestroyed = sheet.crop(1, 1);
-        townSoil = sheet.crop(2, 1);
-        tree = sheet.crop(3, 1);
-        playerLeft = sheet.crop(0, 2);
-        playerRight = sheet.crop(1, 2);
-        rockUp = sheet.crop(2, 2);
-        rockDown = sheet.crop(3, 2);
-        rockLeft = sheet.crop(0, 3);
-        rockRight = sheet.crop(1, 3);
-        */
-        woodBox=props.crop(2,0);
+        //SpriteSheet props=new SpriteSheet(ImageLoader.LoadImage("/textures/Props.png"));
+        SpriteSheet floor=new SpriteSheet(ImageLoader.LoadImage("/textures/walls1.png"));
+
+
+        //woodBox=props.crop(2,0);
+        floorOne=floor.crop(0,0);
         background=ImageLoader.LoadImage("/textures/background.png"); //background-ul e temporar
+        //MapBuilder.mapBuilder();
     }
 }
