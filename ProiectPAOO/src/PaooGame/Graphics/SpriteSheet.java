@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 /*! \class public class SpriteSheet
     \brief Clasa retine o referinta catre o imagine formata din dale (sprite sheet)
 
-    Metoda crop() returneaza o dala de dimensiuni fixe (o subimagine) din sprite sheet
+    Metoda cropS1() returneaza o dala de dimensiuni fixe (o subimagine) din sprite sheet
     de la adresa (x * latimeDala, y * inaltimeDala)
  */
 public class SpriteSheet
@@ -28,7 +28,7 @@ public class SpriteSheet
         spriteSheet = buffImg;
     }
 
-    /*! \fn public BufferedImage crop(int x, int y)
+    /*! \fn public BufferedImage cropS1(int x, int y)
         \brief Returneaza un obiect BufferedImage ce contine o subimage (dala).
 
         Subimaginea este localizata avand ca referinta punctul din stanga sus.
@@ -36,15 +36,18 @@ public class SpriteSheet
         \param x numarul dalei din sprite sheet pe axa x.
         \param y numarul dalei din sprite sheet pe axa y.
      */
-    public BufferedImage crop(int x, int y)
+    public BufferedImage cropS1(int x, int y)
     {
             /// Subimaginea (dala) este regasita in sprite sheet specificad coltul stanga sus
             /// al imaginii si apoi latimea si inaltimea (totul in pixeli). Coltul din stanga sus al imaginii
             /// se obtine inmultind numarul de ordine al dalei cu dimensiunea in pixeli a unei dale.
         return spriteSheet.getSubimage(x * tileWidth, y * tileHeight, tileWidth, tileHeight);
     }
+
+    public BufferedImage cropS2(int x, int y){
+        return spriteSheet.getSubimage(x*175, y*133, 175, 133);
+    }
     public BufferedImage cropMainChar(int x, int y, int frameWidth, int frameHeight) {
         return spriteSheet.getSubimage(x*frameWidth,y*frameHeight,frameWidth,frameHeight);
-
     }
 }

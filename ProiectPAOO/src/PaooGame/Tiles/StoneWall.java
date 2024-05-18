@@ -4,11 +4,15 @@ import PaooGame.Tiles.TileFactory;
 
 import java.awt.image.BufferedImage;
 
+import static PaooGame.Graphics.Assets.wallOne;
+
 public class StoneWall implements TileFactory {
     private int id;
     final private SolidState state=SolidState.SOLID;
-    private BufferedImage texture;
-
+    final private BufferedImage texture = wallOne;
+    public StoneWall(int newID){
+        id=newID;
+    }
     @Override
     public void setID(int newId){
         id=newId;

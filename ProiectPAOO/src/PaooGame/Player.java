@@ -7,8 +7,10 @@ import java.awt.image.BufferedImage;
 
 import static PaooGame.Graphics.Assets.*;
 
+import PaooGame.Graphics.MapBuilder;
 import PaooGame.Graphics.SpriteSheet.*; //probleme cu folosirea import-urilor
 import PaooGame.Tiles.*;
+import PaooGame.Graphics.MapBuilder.*;
 
 public class Player {
     private int x, y;
@@ -21,6 +23,7 @@ public class Player {
     private int nrMoveLeftFrames = 6;
 
     private static final int frameWidth = 133;
+    private static final int CollisionWidth=70; //pentru a rezolva problema cu aparenta coliziunii
     private static final int frameHeight = 71;
     private int currentFrame; // frame-ul curent din animatie
 
@@ -32,6 +35,8 @@ public class Player {
     private int groundLevel;
     private boolean isMovingLeft;
     private boolean isMovingRight;
+    private boolean isMovingUp;
+    private boolean isMovingDown;
     boolean CollisionOn;
 
 
@@ -67,7 +72,7 @@ public class Player {
 
     }
 
-    public void update(Tile[] tiles) { //construit pentru a trata coliziunile, momentan nu functioneaza conform asteptarilor
+    public void update() { //construit pentru a trata coliziunile, momentan nu functioneaza conform asteptarilor
 
         //portiune cod actualizarea animatiei
         //actualizare idle
@@ -94,11 +99,10 @@ public class Player {
         }
 
 
-      /*  if ((isMovingLeft || isMovingRight) && checkXCollision(tiles)) {
+        if ((isMovingLeft || isMovingRight || isMovingDown || isMovingUp) && checkXCollision(MapBuilder.map)) {
             CollisionOn=true;
             this.stopRunning();
-            moveDown();
-        }*/
+        }
     }
 
 
@@ -113,28 +117,9 @@ public class Player {
         } else if (isMovingRight && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
             g.drawImage(moveRightFrames[currentFrame], x, y, null);
         }
-    }
-    public boolean checkCollision(Tile[] tiles) {
-        Rectangle playerBounds = new Rectangle(x, y, frameWidth, frameHeight);
-        System.out.println("Player bounds: " + playerBounds);
-
-        for (Tile tile : tiles) {
-            if (!tile.IsSolid()) {
-                continue;
-            }
-
-            Rectangle tileBounds = new Rectangle(tile.GetId() * Tile.TILE_WIDTH, 0, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
-            //System.out.println("Tile bounds: " + tileBounds);
-
-            if (playerBounds.intersects(tileBounds)) {
-                System.out.println("Collision detected with tile " + tile.GetId());
-                if (tileBounds.getX() == x) { // Verificam dacă coliziunea se produce pe axa X
-                    return true; // Returnam true doar dacă coliziunea se produce pe axa X
-                }
-            }
-        }
-
-        return false;
+        /*g.setColor(Color.GREEN);
+        g.drawRect(x+20, y, CollisionWidth, frameHeight); //Folosit pentru a vedea hitbox-ul player-ului. Trebuie folosit in paralel cu echivalentul din MapBuilder
+         */
     }
 
     private boolean isOnTileAxis() { //nefolosit inca
@@ -142,38 +127,50 @@ public class Player {
         return x % Tile.TILE_WIDTH == 0;
     }
 
-    public boolean checkXCollision(Tile[] tiles) {
-        Rectangle playerBounds = new Rectangle(x, y, frameWidth, frameHeight);
+    public boolean checkXCollision(TileFactory[][] map) {
+        Rectangle playerBounds = new Rectangle(x+20, y, CollisionWidth, frameHeight);
 
         if (isMovingLeft) {
-            playerBounds = new Rectangle(x - speed, y, frameWidth, frameHeight);
+            playerBounds = new Rectangle(x - speed+20, y, CollisionWidth, frameHeight);
         } else if (isMovingRight) {
-            playerBounds = new Rectangle(x + speed, y, frameWidth, frameHeight);
+            playerBounds = new Rectangle(x + speed+20, y, CollisionWidth, frameHeight);
         }
         //System.out.println("Player bounds: " + playerBounds);
 
-        for (Tile tile : tiles) {
-            if (!tile.IsSolid()) {
-                continue;
-            }
+        for(int i=0;i< MapBuilder.mapWidth;i++) {
+            for (int j = 0; j < MapBuilder.mapHeight; j++) {
+                if (map[i][j] == null || map[i][j].getSolidState()==SolidState.NOT_SOLID)
+                    continue;
+                Rectangle tileBounds = new Rectangle(i*65,j*67,65,67);
+                //System.out.println("Tile bounds: " + tileBounds);
 
-            Rectangle tileBounds = new Rectangle(tile.GetId() * Tile.TILE_WIDTH, 0, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
-            //System.out.println("Tile bounds: " + tileBounds);
-
-            if (playerBounds.intersects(tileBounds)) {
-                System.out.println("Collision detected with tile " + tile.GetId());
-                if (isMovingLeft || isMovingRight) {
-                    isMovingLeft=false;
-                    isMovingRight=false;
-                    isIdle=true;
-                    moveDown();
-                    return true;
+                if (playerBounds.intersects(tileBounds)) {
+                    System.out.println("Collision detected with tile at x=" + i*65 + " y=" + j*67 );
+                    if (isMovingLeft) {
+                        stopRunning();
+                        moveRight();
+                        return true;
+                    }else if(isMovingRight){
+                        stopRunning();
+                        moveLeft();
+                        return true;
+                    }else if(isMovingUp){
+                        stopRunning();
+                        moveDown();
+                        return true;
+                    }else if(isMovingDown){
+                        stopRunning();
+                        moveUp();
+                        return true;
+                    }
                 }
+
+
+                // Dacă nu s-a detectat nicio coliziune, return false
+
             }
         }
-
-        // Dacă nu s-a detectat nicio coliziune, return false
-        CollisionOn=false;
+        CollisionOn = false;
         return false;
     }
 
@@ -199,6 +196,8 @@ public class Player {
         isIdle = false;
         isMovingLeft = true;
         isMovingRight=false;
+        isMovingUp=false;
+        isMovingDown=false;
     }
 
     public void moveRight()
@@ -207,23 +206,31 @@ public class Player {
         isIdle = false;
         isMovingLeft=false;
         isMovingRight = true;
+        isMovingUp=false;
+        isMovingDown=false;
     }
     public void moveUp(){
         y=y-speed;
         isIdle=false;
-        isMovingRight=true;
+        isMovingRight=false;
         isMovingLeft=false;
+        isMovingUp=true;
+        isMovingDown=false;
     }
     public void moveDown(){
         y=y+speed;
         isIdle=false;
         isMovingLeft=false;
-        isMovingRight=true;
+        isMovingRight=false;
+        isMovingUp=false;
+        isMovingDown=true;
     }
      public void stopRunning()
     {
         isMovingLeft = false;
         isMovingRight=false;
+        isMovingUp=false;
+        isMovingDown=false;
         isIdle = true;
     }
 }

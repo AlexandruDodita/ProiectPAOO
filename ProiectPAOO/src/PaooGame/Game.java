@@ -65,7 +65,7 @@ public class Game implements Runnable,KeyListener
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
 
 
-    private Tile[] tileArray;
+    //private Tile[] tileArray;
 
     /*! \fn public Game(String title, int width, int height)
         \brief Constructor de initializare al clasei Game.
@@ -106,14 +106,6 @@ public class Game implements Runnable,KeyListener
         //tileArray incarca primul rand de tile-uri. Momentan afisajul pe ecran al dalelor nu corespunde cu dalele puse in cod (Aka state-ul lor de solid, de aia s-a creat un invisTile pentru testare.
         //De asemenea, hit-boxul (tileBounds folosit in Player.java) este mult prea mare comparativ cu tile-ul propiu-zis din ce se pare.
         //Posibila solutie: Obtinerea unui tileArray sau chiar matrice care sa coindicda cu cum sunt afisate tile-urile pe harta, astfel incat programul sa poata prezice corect unde trebuie sa se opreasca.
-        tileArray = new Tile[10];
-        for (int i = 0; i < 3; i++) {
-            tileArray[i] = new invisTile(i);
-        }
-        tileArray[3]=new WoodBoxO(3);
-        for (int i = 4; i < 10; i++) {
-            tileArray[i] = new invisTile(i);
-        }
     }
     /*! \fn public void run()
         \brief Functia ce va rula in thread-ul creat.
@@ -213,7 +205,7 @@ public class Game implements Runnable,KeyListener
      */
     private void Update()
     {
-        player.update(tileArray);
+        player.update();
     }
 
     /*! \fn private void Draw()
@@ -240,13 +232,13 @@ public class Game implements Runnable,KeyListener
         g = bs.getDrawGraphics();
         /// Se sterge ce era
         g.clearRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
-        g.drawImage(Assets.background, 0, 0, null);
-
+       // g.drawImage(Assets.background, 0, 0, null);
+        g.setColor(Color.black);
+        g.fillRect(0,0,wnd.GetWndWidth(), wnd.GetWndHeight());
 
         /// operatie de desenare
         // ...............
         //Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
-        MapBuilder.mapBuilder();
         MapBuilder.draw(g);
         player.render(g);
         //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);

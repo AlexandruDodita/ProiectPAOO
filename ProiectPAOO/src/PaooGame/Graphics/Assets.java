@@ -12,10 +12,12 @@ public class Assets
 
     public static BufferedImage woodBox;
     public static BufferedImage floorOne;
-    public static BufferedImage background;
+    //public static BufferedImage background;
     public static SpriteSheet playerIdle;
     public static SpriteSheet playerRunLeft;
     public static SpriteSheet playerRunRight;
+    public static BufferedImage wallOne;
+
 
 
     /*! \fn public static void Init()
@@ -32,12 +34,14 @@ public class Assets
         playerRunLeft=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunLeft.png"));
         playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/playerRunRight.png"));
         //SpriteSheet props=new SpriteSheet(ImageLoader.LoadImage("/textures/Props.png"));
-        SpriteSheet floor=new SpriteSheet(ImageLoader.LoadImage("/textures/walls1.png"));
+        SpriteSheet floor=new SpriteSheet(ImageLoader.LoadImage("/textures/floorTiles.png"));
+        SpriteSheet walls = new SpriteSheet(ImageLoader.LoadImage("/textures/walltile.png"));
 
 
         //woodBox=props.crop(2,0);
-        floorOne=floor.crop(0,0);
-        background=ImageLoader.LoadImage("/textures/background.png"); //background-ul e temporar
-        //MapBuilder.mapBuilder();
+        floorOne=floor.cropS1(0,0);
+        wallOne=walls.cropS1(0,0);
+        //background=ImageLoader.LoadImage("/textures/background.png"); //background-ul e temporar
+        MapBuilder.mapBuilder();
     }
 }
