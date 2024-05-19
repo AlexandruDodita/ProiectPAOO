@@ -114,7 +114,7 @@ public class Player {
             g.drawImage(idleFrames[currentFrame], x, y, null);
         } else if (isMovingLeft && currentFrame >= 0 && currentFrame < moveLeftFrames.length) {
             g.drawImage(moveLeftFrames[currentFrame], x, y, null);
-        } else if (isMovingRight && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
+        } else if ((isMovingRight||isMovingUp||isMovingDown) && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
             g.drawImage(moveRightFrames[currentFrame], x, y, null);
         }
         /*g.setColor(Color.GREEN);

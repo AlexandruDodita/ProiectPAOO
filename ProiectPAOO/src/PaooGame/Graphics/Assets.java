@@ -12,7 +12,7 @@ public class Assets
 
     public static BufferedImage woodBox;
     public static BufferedImage floorOne;
-    //public static BufferedImage background;
+    public static BufferedImage background;
     public static SpriteSheet playerIdle;
     public static SpriteSheet playerRunLeft;
     public static SpriteSheet playerRunRight;
@@ -41,7 +41,7 @@ public class Assets
         //woodBox=props.crop(2,0);
         floorOne=floor.cropS1(0,0);
         wallOne=walls.cropS1(0,0);
-        //background=ImageLoader.LoadImage("/textures/background.png"); //background-ul e temporar
+        background=ImageLoader.LoadImage("/textures/background.png"); //background-ul e temporar
         MapBuilder.mapBuilder();
     }
 }

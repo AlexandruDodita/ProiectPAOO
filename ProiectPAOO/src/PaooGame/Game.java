@@ -4,8 +4,10 @@ import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
 import PaooGame.Graphics.MapBuilder;
 import PaooGame.Tiles.*;
+import PaooGame.Graphics.MainMenu;
 
 import java.awt.*;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -50,6 +52,7 @@ public class Game implements Runnable,KeyListener
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
+
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
     /// Modul in care va fi implementata aceasta strategie in cadrul proiectului curent va fi triplu buffer-at
@@ -64,6 +67,10 @@ public class Game implements Runnable,KeyListener
 
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
 
+    public enum GAME_STATE{
+        MENU,GAME
+    }
+    public static GAME_STATE state=GAME_STATE.MENU;
 
     //private Tile[] tileArray;
 
@@ -102,10 +109,7 @@ public class Game implements Runnable,KeyListener
         Assets.Init();
         player = new Player();
         wnd.GetCanvas().addKeyListener(this);
-
-        //tileArray incarca primul rand de tile-uri. Momentan afisajul pe ecran al dalelor nu corespunde cu dalele puse in cod (Aka state-ul lor de solid, de aia s-a creat un invisTile pentru testare.
-        //De asemenea, hit-boxul (tileBounds folosit in Player.java) este mult prea mare comparativ cu tile-ul propiu-zis din ce se pare.
-        //Posibila solutie: Obtinerea unui tileArray sau chiar matrice care sa coindicda cu cum sunt afisate tile-urile pe harta, astfel incat programul sa poata prezice corect unde trebuie sa se opreasca.
+        wnd.GetCanvas().addMouseListener(new MainMenu(this));
     }
     /*! \fn public void run()
         \brief Functia ce va rula in thread-ul creat.
@@ -133,11 +137,13 @@ public class Game implements Runnable,KeyListener
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                /// Actualizeaza pozitiile elementelor
-                Update();
-                /// Deseneaza elementele grafica in fereastra.
+                if(state==GAME_STATE.GAME) {
+                    /// Actualizeaza pozitiile elementelor
+                    Update();
+                    /// Deseneaza elementele grafica in fereastra.
+                    oldTime = curentTime;
+                }
                 Draw();
-                oldTime = curentTime;
             }
         }
 
@@ -232,15 +238,21 @@ public class Game implements Runnable,KeyListener
         g = bs.getDrawGraphics();
         /// Se sterge ce era
         g.clearRect(0, 0, wnd.GetWndWidth(), wnd.GetWndHeight());
-       // g.drawImage(Assets.background, 0, 0, null);
+
         g.setColor(Color.black);
         g.fillRect(0,0,wnd.GetWndWidth(), wnd.GetWndHeight());
 
         /// operatie de desenare
         // ...............
         //Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
-        MapBuilder.draw(g);
-        player.render(g);
+        if(state==GAME_STATE.GAME) {
+            MapBuilder.draw(g);
+            player.render(g);
+        }else if(state==GAME_STATE.MENU){
+            g.drawImage(Assets.background, 0, 0, null);
+            MainMenu.render(g);
+
+        }
         //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
 
@@ -258,7 +270,7 @@ public class Game implements Runnable,KeyListener
         public void keyPressed(KeyEvent e)
         {
             int keyCode = e.getKeyCode();
-            if(!player.CollisionOn) {
+            if(!player.CollisionOn && state==GAME_STATE.GAME) {
                 if (keyCode == KeyEvent.VK_A) {
                     // tasta A misca jucatorul la stanga
                     player.moveLeft();
