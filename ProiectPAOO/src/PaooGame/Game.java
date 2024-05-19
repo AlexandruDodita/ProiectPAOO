@@ -2,6 +2,7 @@ package PaooGame;
 
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
+import PaooGame.Graphics.Camera;
 import PaooGame.Graphics.MapBuilder;
 import PaooGame.Tiles.*;
 import PaooGame.Graphics.MainMenu;
@@ -68,7 +69,7 @@ public class Game implements Runnable,KeyListener
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
 
     public enum GAME_STATE{
-        MENU,GAME
+        MENU, GAME, LEVEL_SELECTION
     }
     public static GAME_STATE state=GAME_STATE.MENU;
 
@@ -109,7 +110,7 @@ public class Game implements Runnable,KeyListener
         Assets.Init();
         player = new Player();
         wnd.GetCanvas().addKeyListener(this);
-        wnd.GetCanvas().addMouseListener(new MainMenu(this));
+        wnd.GetCanvas().addMouseListener(new MainMenu(this,g));
     }
     /*! \fn public void run()
         \brief Functia ce va rula in thread-ul creat.
@@ -245,13 +246,13 @@ public class Game implements Runnable,KeyListener
         /// operatie de desenare
         // ...............
         //Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
+        g.translate(-Camera.getX(), -Camera.getY());
         if(state==GAME_STATE.GAME) {
             MapBuilder.draw(g);
             player.render(g);
-        }else if(state==GAME_STATE.MENU){
+        }else if (state == GAME_STATE.MENU || state == GAME_STATE.LEVEL_SELECTION) {
             g.drawImage(Assets.background, 0, 0, null);
             MainMenu.render(g);
-
         }
         //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
@@ -273,18 +274,18 @@ public class Game implements Runnable,KeyListener
             if(!player.CollisionOn && state==GAME_STATE.GAME) {
                 if (keyCode == KeyEvent.VK_A) {
                     // tasta A misca jucatorul la stanga
-                    player.moveLeft();
+                    player.moveLeft(g);
                     System.out.println("Misc Stanga"); //debug
                 } else if (keyCode == KeyEvent.VK_D) {
                     // D misca la dreapta
-                    player.moveRight();
+                    player.moveRight(g);
                     System.out.println("Misc Dreapta"); //debug
                 } else if (keyCode == KeyEvent.VK_W) {
                     // W jucatorul sare
-                    player.moveUp();
+                    player.moveUp(g);
                     System.out.println("Misc Sus");
                 } else if (keyCode == KeyEvent.VK_S) {
-                    player.moveDown();
+                    player.moveDown(g);
                     System.out.println("Misc Jos");
                 }
             }else{

@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import static PaooGame.Graphics.Assets.*;
 
+import PaooGame.Graphics.Camera;
 import PaooGame.Graphics.MapBuilder;
 import PaooGame.Graphics.SpriteSheet.*; //probleme cu folosirea import-urilor
 import PaooGame.Tiles.*;
@@ -25,6 +26,7 @@ public class Player {
     private static final int frameWidth = 133;
     private static final int CollisionWidth=70; //pentru a rezolva problema cu aparenta coliziunii
     private static final int frameHeight = 71;
+    private static int CameraX=0,CameraY=0;
     private int currentFrame; // frame-ul curent din animatie
 
     private int frameDelay; //intarziere de frame-uri pentru animatii
@@ -148,19 +150,19 @@ public class Player {
                     System.out.println("Collision detected with tile at x=" + i*65 + " y=" + j*67 );
                     if (isMovingLeft) {
                         stopRunning();
-                        moveRight();
+                        moveRight(null);
                         return true;
                     }else if(isMovingRight){
                         stopRunning();
-                        moveLeft();
+                        moveLeft(null);
                         return true;
                     }else if(isMovingUp){
                         stopRunning();
-                        moveDown();
+                        moveDown(null);
                         return true;
                     }else if(isMovingDown){
                         stopRunning();
-                        moveUp();
+                        moveUp(null);
                         return true;
                     }
                 }
@@ -190,7 +192,7 @@ public class Player {
     }
 
     //miscari stanga, dreapta, trebuie revizuit
-    public void moveLeft()
+    public void moveLeft(Graphics g)
     {
         x = x - speed;
         isIdle = false;
@@ -198,9 +200,13 @@ public class Player {
         isMovingRight=false;
         isMovingUp=false;
         isMovingDown=false;
+        CameraX-=5;
+        Camera.setX(CameraX);
+        if(g!=null)
+            Camera.moveCamera(g);
     }
 
-    public void moveRight()
+    public void moveRight(Graphics g)
     {
         x = x + speed;
         isIdle = false;
@@ -208,22 +214,34 @@ public class Player {
         isMovingRight = true;
         isMovingUp=false;
         isMovingDown=false;
+        CameraX+=5;
+        Camera.setX(CameraX);
+        if(g!=null)
+            Camera.moveCamera(g);
     }
-    public void moveUp(){
+    public void moveUp(Graphics g){
         y=y-speed;
         isIdle=false;
         isMovingRight=false;
         isMovingLeft=false;
         isMovingUp=true;
         isMovingDown=false;
+        CameraY-=5;
+        Camera.setY(CameraY);
+        if(g!=null)
+            Camera.moveCamera(g);
     }
-    public void moveDown(){
+    public void moveDown(Graphics g){
         y=y+speed;
         isIdle=false;
         isMovingLeft=false;
         isMovingRight=false;
         isMovingUp=false;
         isMovingDown=true;
+        CameraY+=5;
+        Camera.setY(CameraY);
+        if(g!=null)
+            Camera.moveCamera(g);
     }
      public void stopRunning()
     {

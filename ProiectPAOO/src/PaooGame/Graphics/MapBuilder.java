@@ -1,5 +1,12 @@
 package PaooGame.Graphics;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.List;
 import PaooGame.Tiles.StoneFloor;
 import PaooGame.Tiles.StoneWall;
 import PaooGame.Tiles.TileFactory;
@@ -8,8 +15,8 @@ import PaooGame.DatabaseManager;
 import java.awt.*;
 
 public class MapBuilder {
-    final public static int mapWidth = 23; //trebuie fatait un pic sa se vada exact under se termina , pare a fi o greseala de calcul?
-    final public static int mapHeight = 15;
+    final public static int mapWidth = 64; //trebuie fatait un pic sa se vada exact under se termina , pare a fi o greseala de calcul?
+    final public static int mapHeight = 64;
     public static TileFactory  map[][]= new TileFactory[mapWidth][mapHeight];
     public static void  draw(Graphics g){
         for(int i=0;i<mapWidth;i++){
@@ -33,7 +40,40 @@ public class MapBuilder {
 //                //dbManager.insertTile(i, j, map[i][j].getClass().getSimpleName());
 //            }
 //        }
-        //hallway 1
+        String filePath="C:\\Users\\alexd\\IdeaProjects\\ProiectPAOO\\ProiectPAOO\\res\\Maps\\Map1.txt";
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(new File(filePath));
+            for (int i = 0; i < mapHeight-1; i++) {
+
+                    String line = scanner.nextLine();
+                    String[] values = line.split(" ");
+                    for (int j = 0; j < mapWidth-1; j++) {
+                        int x = Integer.parseInt(values[j]);
+                        switch (x) {
+                            case 1:
+                                map[j][i] = sf;
+                                break;
+                            case 2:
+                                map[j][i] = sw;
+                                break;
+                            default:
+                                map[j][i] = null;
+                                break;
+                        }
+                    }
+
+            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (scanner != null) {
+                scanner.close();
+            }
+        }
+
+
+        /*//hallway 1
         for(int i=0;i<2;i++){
             for(int j=11;j<15;j++){
                 if(j==11){
@@ -86,6 +126,6 @@ public class MapBuilder {
                     map[i][j]=sf;
                 }
             }
-        }
+        }*/
     }
 }
