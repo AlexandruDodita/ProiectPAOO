@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 import static PaooGame.Graphics.Assets.*;
+import static PaooGame.Graphics.MapBuilder.g1;
+import static PaooGame.Graphics.MapBuilder.g2;
 
 import PaooGame.Graphics.Camera;
 import PaooGame.Graphics.MapBuilder;
@@ -27,6 +29,7 @@ public class Player {
     private static final int CollisionWidth=70; //pentru a rezolva problema cu aparenta coliziunii
     private static final int frameHeight = 71;
     private static int CameraX=0,CameraY=0;
+    private int holdX,holdY;
     private int currentFrame; // frame-ul curent din animatie
 
     private int frameDelay; //intarziere de frame-uri pentru animatii
@@ -39,7 +42,9 @@ public class Player {
     private boolean isMovingRight;
     private boolean isMovingUp;
     private boolean isMovingDown;
+    private boolean discovered=false;
     boolean CollisionOn;
+
 
 
 
@@ -69,7 +74,7 @@ public class Player {
         isMovingRight = false;
 
 
-        x = 0;
+        x = 40;
         y = 900;
 
     }
@@ -109,7 +114,7 @@ public class Player {
 
 
     public void render(Graphics g) {
-       // System.out.println("Render - currentFrame: " + currentFrame); //debug pentru ca frame-urile totale depaseau frame-urile de pe ecran
+        // System.out.println("Render - currentFrame: " + currentFrame); //debug pentru ca frame-urile totale depaseau frame-urile de pe ecran
         // Desenare player pe ecran
         // verificare ca frame-ul curent sa nu treaca out of bounds
         if (isIdle && currentFrame >= 0 && currentFrame < idleFrames.length) {
@@ -141,12 +146,24 @@ public class Player {
 
         for(int i=0;i< MapBuilder.mapWidth;i++) {
             for (int j = 0; j < MapBuilder.mapHeight; j++) {
-                if (map[i][j] == null || map[i][j].getSolidState()==SolidState.NOT_SOLID)
+                if((map[i][j]==g1 || map[i][j]==g2) && !discovered){
+                    System.out.println("DEBUG: gate hitbox are: " + i*65 +" "+ j*67);
+                    holdX=i*65;
+                    holdY=j*67;
+                    discovered=true;
+                }
+                if ((map[i][j] == null || map[i][j].getSolidState()==SolidState.NOT_SOLID) && (map[i][j]!=g1 && map[i][j]!=g2))
                     continue;
                 Rectangle tileBounds = new Rectangle(i*65,j*67,65,67);
-                //System.out.println("Tile bounds: " + tileBounds);
 
                 if (playerBounds.intersects(tileBounds)) {
+                    //System.out.println("Tile bounds: " + tileBounds + " " + holdX + " " +holdY);
+                    if((tileBounds.getX()==holdX && tileBounds.getY()==holdY)){
+                        Game.state=Game.GAME_STATE.MENU;
+                        Camera.setX(0);
+                        Camera.setY(0);
+                        return false;
+                    }
                     System.out.println("Collision detected with tile at x=" + i*65 + " y=" + j*67 );
                     if (isMovingLeft) {
                         stopRunning();
@@ -243,7 +260,7 @@ public class Player {
         if(g!=null)
             Camera.moveCamera(g);
     }
-     public void stopRunning()
+    public void stopRunning()
     {
         isMovingLeft = false;
         isMovingRight=false;

@@ -2,10 +2,7 @@ package PaooGame.Graphics;
 
 import PaooGame.Game;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -87,17 +84,17 @@ public class MainMenu implements MouseListener {
             if (mx >= level1Button.x && mx <= level1Button.x + level1Button.width) {
                 if (my >= level1Button.y && my <= level1Button.y + level1Button.height) {
                     // Load level 1
-                    Game.state = Game.GAME_STATE.GAME;
+                    Game.state = Game.GAME_STATE.LEVEL_ONE;
                 }
             } else if (mx >= level2Button.x && mx <= level2Button.x + level2Button.width) {
                 if (my >= level2Button.y && my <= level2Button.y + level2Button.height) {
                     // Load level 2
-                    Game.state = Game.GAME_STATE.GAME;
+                    Game.state = Game.GAME_STATE.LEVEL_ONE;
                 }
             } else if (mx >= level3Button.x && mx <= level3Button.x + level3Button.width) {
                 if (my >= level3Button.y && my <= level3Button.y + level3Button.height) {
                     // Load level 3
-                    Game.state = Game.GAME_STATE.GAME;
+                    Game.state = Game.GAME_STATE.LEVEL_ONE;
                 }
             }
         }

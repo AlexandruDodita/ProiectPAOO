@@ -4,11 +4,9 @@ import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.Assets;
 import PaooGame.Graphics.Camera;
 import PaooGame.Graphics.MapBuilder;
-import PaooGame.Tiles.*;
 import PaooGame.Graphics.MainMenu;
 
 import java.awt.*;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -69,7 +67,7 @@ public class Game implements Runnable,KeyListener
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
 
     public enum GAME_STATE{
-        MENU, GAME, LEVEL_SELECTION
+        MENU, LEVEL_SELECTION, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE
     }
     public static GAME_STATE state=GAME_STATE.MENU;
 
@@ -138,7 +136,7 @@ public class Game implements Runnable,KeyListener
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                if(state==GAME_STATE.GAME) {
+                if(state==GAME_STATE.LEVEL_ONE) {
                     /// Actualizeaza pozitiile elementelor
                     Update();
                     /// Deseneaza elementele grafica in fereastra.
@@ -247,7 +245,7 @@ public class Game implements Runnable,KeyListener
         // ...............
         //Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
         g.translate(-Camera.getX(), -Camera.getY());
-        if(state==GAME_STATE.GAME) {
+        if(state==GAME_STATE.LEVEL_ONE) {
             MapBuilder.draw(g);
             player.render(g);
         }else if (state == GAME_STATE.MENU || state == GAME_STATE.LEVEL_SELECTION) {
@@ -271,22 +269,22 @@ public class Game implements Runnable,KeyListener
         public void keyPressed(KeyEvent e)
         {
             int keyCode = e.getKeyCode();
-            if(!player.CollisionOn && state==GAME_STATE.GAME) {
+            if(!player.CollisionOn && state==GAME_STATE.LEVEL_ONE) {
                 if (keyCode == KeyEvent.VK_A) {
                     // tasta A misca jucatorul la stanga
                     player.moveLeft(g);
-                    System.out.println("Misc Stanga"); //debug
+                    //System.out.println("Misc Stanga"); //debug
                 } else if (keyCode == KeyEvent.VK_D) {
                     // D misca la dreapta
                     player.moveRight(g);
-                    System.out.println("Misc Dreapta"); //debug
+                    //System.out.println("Misc Dreapta"); //debug
                 } else if (keyCode == KeyEvent.VK_W) {
                     // W jucatorul sare
                     player.moveUp(g);
-                    System.out.println("Misc Sus");
+                    //System.out.println("Misc Sus");
                 } else if (keyCode == KeyEvent.VK_S) {
                     player.moveDown(g);
-                    System.out.println("Misc Jos");
+                    //System.out.println("Misc Jos");
                 }
             }else{
                 player.CollisionOn=false;

@@ -7,9 +7,9 @@ import java.nio.file.Paths;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
-import PaooGame.Tiles.StoneFloor;
-import PaooGame.Tiles.StoneWall;
-import PaooGame.Tiles.TileFactory;
+
+import PaooGame.Game;
+import PaooGame.Tiles.*;
 import PaooGame.DatabaseManager;
 
 import java.awt.*;
@@ -32,6 +32,8 @@ public class MapBuilder {
     }
     public static StoneFloor sf=new StoneFloor(0);
     public static StoneWall sw = new StoneWall(1);
+    public static Gate1 g1=new Gate1();
+    public static Gate2 g2=new Gate2();
     public static void  mapBuilder(){
         //DatabaseManager dbManager = new DatabaseManager();
 //        for(int i=0;i<mapWidth;i++){
@@ -41,9 +43,21 @@ public class MapBuilder {
 //            }
 //        }
         String filePath="C:\\Users\\alexd\\IdeaProjects\\ProiectPAOO\\ProiectPAOO\\res\\Maps\\Map1.txt";
+        String filePath2="C:\\Users\\alexd\\IdeaProjects\\ProiectPAOO\\ProiectPAOO\\res\\Maps\\Map2.txt";
+        String filePath3="C:\\Users\\alexd\\IdeaProjects\\ProiectPAOO\\ProiectPAOO\\res\\Maps\\Map3.txt";
         Scanner scanner = null;
         try {
-            scanner = new Scanner(new File(filePath));
+            switch(Game.state) {
+                case LEVEL_ONE:
+                    scanner = new Scanner(new File(filePath));
+                    break;
+                case LEVEL_TWO:
+                    scanner = new Scanner(new File(filePath2));
+                    break;
+                case LEVEL_THREE:
+                    scanner = new Scanner(new File(filePath3));
+                    break;
+            }
             for (int i = 0; i < mapHeight-1; i++) {
 
                     String line = scanner.nextLine();
@@ -56,6 +70,12 @@ public class MapBuilder {
                                 break;
                             case 2:
                                 map[j][i] = sw;
+                                break;
+                            case 3:
+                                map[j][i]=g1;
+                                break;
+                            case 4:
+                                map[j][i]=g2;
                                 break;
                             default:
                                 map[j][i] = null;
@@ -71,61 +91,5 @@ public class MapBuilder {
                 scanner.close();
             }
         }
-
-
-        /*//hallway 1
-        for(int i=0;i<2;i++){
-            for(int j=11;j<15;j++){
-                if(j==11){
-                    map[i][j]=sw;
-                }else
-                    map[i][j]=sf;
-            }
-        }
-        //room 1
-        for(int i=2;i<8;i++){
-            for(int j=8;j<15;j++){
-                if(j==8||i==7||j==14){
-                    map[i][j]=sw;
-                }else{
-                    map[i][j]=sf;
-                }
-            }
-        }
-        //extra walls for room 1
-        for(int j=8;j<15;j++){
-            if(j>=12){
-                continue;
-            }else{
-                map[1][j]=sw;
-            }
-        }
-        //hallway 2
-        map[7][10]=sf;
-        map[7][11]=sf;
-        for(int i=8;i<13;i++){
-            for(int j=8;j<13;j++){
-                if(j==9||j==12||i==12) {
-                    map[i][j] = sw;
-                }
-                else{
-                    map[i][j]=sf;
-                }
-            }
-        }
-        map[10][9]=sf;
-        map[11][9]=sf;
-        //room 2
-        for(int i=6;i<16;i++){
-            for(int j=0;j<=8;j++){
-                if(j==0||i==6||i==15){
-                    map[i][j]=sw;
-                }else if(j==8 && (i<10||i>11)){
-                    map[i][j]=sw;
-                }else{
-                    map[i][j]=sf;
-                }
-            }
-        }*/
     }
 }

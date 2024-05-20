@@ -17,6 +17,8 @@ public class Assets
     public static SpriteSheet playerRunLeft;
     public static SpriteSheet playerRunRight;
     public static BufferedImage wallOne;
+    public static BufferedImage gate1;
+    public static BufferedImage gate2;
 
 
 
@@ -36,11 +38,13 @@ public class Assets
         //SpriteSheet props=new SpriteSheet(ImageLoader.LoadImage("/textures/Props.png"));
         SpriteSheet floor=new SpriteSheet(ImageLoader.LoadImage("/textures/floorTiles.png"));
         SpriteSheet walls = new SpriteSheet(ImageLoader.LoadImage("/textures/walltile.png"));
-
+        SpriteSheet gate=new SpriteSheet(ImageLoader.LoadImage("/textures/gate.png"));
 
         //woodBox=props.crop(2,0);
         floorOne=floor.cropS1(0,0);
         wallOne=walls.cropS1(0,0);
+        gate1=gate.cropS1(0,0);
+        gate2=gate.cropS1(1,0);
         background=ImageLoader.LoadImage("/textures/background.png"); //background-ul e temporar
         MapBuilder.mapBuilder();
     }
