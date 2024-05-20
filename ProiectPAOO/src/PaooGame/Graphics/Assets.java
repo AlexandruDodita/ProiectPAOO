@@ -46,6 +46,5 @@ public class Assets
         gate1=gate.cropS1(0,0);
         gate2=gate.cropS1(1,0);
         background=ImageLoader.LoadImage("/textures/background.png"); //background-ul e temporar
-        MapBuilder.mapBuilder();
     }
 }

@@ -8,11 +8,9 @@ import java.awt.event.MouseListener;
 
 public class MainMenu implements MouseListener {
     private Game game;
-    private Graphics g;// Add a reference to the Game instance
 
     public MainMenu(Game game, Graphics g) {
-        this.game = game;  // Initialize the Game instance
-        //this.g=g;
+        this.game = game;
     }
 
     public static Rectangle playButton = new Rectangle(1200 / 2 + 120, 150, 100, 50);
@@ -52,20 +50,14 @@ public class MainMenu implements MouseListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-
+        // This method can be left empty if not used
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
-        /*public static Rectangle playButton=new Rectangle(1200/2+120,150,100,50);
-        public static Rectangle helpButton=new Rectangle(1200/2+120,250,100,50);
-        public static Rectangle stopButton=new Rectangle(1200/2+120,350,100,50);*/
         int mx = e.getX();
-        //System.out.println("x" + mx);
-
         int my = e.getY();
-        //System.out.println("y" + my);
-        //Play button
+
         if (Game.state == Game.GAME_STATE.MENU) {
             if (mx >= playButton.x && mx <= playButton.x + playButton.width) {
                 if (my >= playButton.y && my <= playButton.y + playButton.height) {
@@ -81,37 +73,51 @@ public class MainMenu implements MouseListener {
                 }
             }
         } else if (Game.state == Game.GAME_STATE.LEVEL_SELECTION) {
-            if (mx >= level1Button.x && mx <= level1Button.x + level1Button.width) {
-                if (my >= level1Button.y && my <= level1Button.y + level1Button.height) {
-                    // Load level 1
-                    Game.state = Game.GAME_STATE.LEVEL_ONE;
-                }
-            } else if (mx >= level2Button.x && mx <= level2Button.x + level2Button.width) {
-                if (my >= level2Button.y && my <= level2Button.y + level2Button.height) {
-                    // Load level 2
-                    Game.state = Game.GAME_STATE.LEVEL_ONE;
-                }
-            } else if (mx >= level3Button.x && mx <= level3Button.x + level3Button.width) {
-                if (my >= level3Button.y && my <= level3Button.y + level3Button.height) {
-                    // Load level 3
-                    Game.state = Game.GAME_STATE.LEVEL_ONE;
-                }
+            System.out.println("Mouse clicked at: " + mx + ", " + my); // Debugging output
+            System.out.println("level2button x" + level2Button.x + ", y" + level2Button.y);
+//            if (mx >= level1Button.x && mx <= level1Button.x + level1Button.width) {
+//                if (my >= level1Button.y && my <= level1Button.y + level1Button.height) {
+//                    // Load level 1
+//                    Game.state = Game.GAME_STATE.LEVEL_ONE;
+//                    MapBuilder.mapBuilder();
+//                }
+//            } else if (mx >= level2Button.x && mx <= level2Button.x + level2Button.width) {
+//                if (my >= level2Button.y && my <= level2Button.y + level2Button.height) {
+//                    // Load level 2
+//                    Game.state = Game.GAME_STATE.LEVEL_TWO;
+//                    System.out.println("Level 2 selected"); // Debugging output
+//                    MapBuilder.mapBuilder();
+//                }
+//            } else if (mx >= level3Button.x && mx <= level3Button.x + level3Button.width) {
+//                if (my >= level3Button.y && my <= level3Button.y + level3Button.height) {
+//                    // Load level 3
+//                    Game.state = Game.GAME_STATE.LEVEL_THREE;
+//                    System.out.println("Level 3 selected"); // Debugging output
+//                    MapBuilder.mapBuilder();
+//                }
+//            }
+            if (level1Button.contains(mx, my)) {
+                Game.state = Game.GAME_STATE.LEVEL_ONE;
+            } else if (level2Button.contains(mx, my)) {
+                Game.state = Game.GAME_STATE.LEVEL_TWO;
+            } else if (level3Button.contains(mx, my)) {
+                Game.state= Game.GAME_STATE.LEVEL_THREE;
             }
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-
+        // This method can be left empty if not used
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-
+        // This method can be left empty if not used
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-
+        // This method can be left empty if not used
     }
 }

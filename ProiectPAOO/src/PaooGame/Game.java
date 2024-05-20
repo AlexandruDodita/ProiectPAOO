@@ -136,7 +136,7 @@ public class Game implements Runnable,KeyListener
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                if(state==GAME_STATE.LEVEL_ONE) {
+                if(state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE) {
                     /// Actualizeaza pozitiile elementelor
                     Update();
                     /// Deseneaza elementele grafica in fereastra.
@@ -245,7 +245,8 @@ public class Game implements Runnable,KeyListener
         // ...............
         //Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
         g.translate(-Camera.getX(), -Camera.getY());
-        if(state==GAME_STATE.LEVEL_ONE) {
+        if(state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE) {
+            MapBuilder.mapBuilder();
             MapBuilder.draw(g);
             player.render(g);
         }else if (state == GAME_STATE.MENU || state == GAME_STATE.LEVEL_SELECTION) {
@@ -269,7 +270,7 @@ public class Game implements Runnable,KeyListener
         public void keyPressed(KeyEvent e)
         {
             int keyCode = e.getKeyCode();
-            if(!player.CollisionOn && state==GAME_STATE.LEVEL_ONE) {
+            if(!player.CollisionOn && (state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE)) {
                 if (keyCode == KeyEvent.VK_A) {
                     // tasta A misca jucatorul la stanga
                     player.moveLeft(g);
