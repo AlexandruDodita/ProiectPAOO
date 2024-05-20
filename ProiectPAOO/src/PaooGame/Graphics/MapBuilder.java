@@ -42,9 +42,9 @@ public class MapBuilder {
 //                //dbManager.insertTile(i, j, map[i][j].getClass().getSimpleName());
 //            }
 //        }
-        String filePath="/home/alexd/IdeaProjects/ProiectPAOO2/ProiectPAOO/res/Maps/Map1.txt";
-        String filePath2="/home/alexd/IdeaProjects/ProiectPAOO2/ProiectPAOO/res/Maps/Map2.txt";
-        String filePath3="/home/alexd/IdeaProjects/ProiectPAOO2/ProiectPAOO/res/Maps/Map3.txt";
+        String filePath="ProiectPAOO/res/Maps/Map1.txt";
+        String filePath2="ProiectPAOO/res/Maps/Map2.txt";
+        String filePath3="ProiectPAOO/res/Maps/Map3.txt";
         Scanner scanner = null;
         try {
             switch(Game.state) {
