@@ -1,27 +1,32 @@
-/*
-TEMPORAR NEFOLOSIT! Pastrat pentru exemplu de implementare a unui Tile specific.
-
-
 package PaooGame.Tiles;
-
-
 
 import PaooGame.Graphics.Assets;
 
-/*! \class public class GrassTile extends Tile
-    \brief Abstractizeaza notiunea de dala de tip iarba.
+import java.awt.image.BufferedImage;
 
-public class GrassTile extends Tile
-{
-    /*! \fn public GrassTile(int id)
-        \brief Constructorul de initializare al clasei
+import static PaooGame.Graphics.Assets.grassTile;
 
-        \param id Id-ul dalei util in desenarea hartii.
+public class GrassTile implements TileFactory {
+    private int id;
+    private final BufferedImage texture=grassTile;
+    private SolidState state=SolidState.NOT_SOLID;
+    @Override
+    public void setID(int newID) {
+        id=newID;
+    }
 
-    public GrassTile(int id)
-    {
-            /// Apel al constructorului clasei de baza
-        super(Assets.grass, id);
+    @Override
+    public SolidState getSolidState() {
+        return state;
+    }
+
+    @Override
+    public int getID() {
+        return 0;
+    }
+
+    @Override
+    public BufferedImage getImage() {
+        return texture;
     }
 }
-*/

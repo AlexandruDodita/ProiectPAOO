@@ -1,5 +1,7 @@
 package PaooGame.GameWindow;
 
+import PaooGame.Graphics.Assets;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -120,5 +122,22 @@ public class GameWindow
      */
     public Canvas GetCanvas() {
         return canvas;
+    }
+    public void showLossMessage(Graphics g) {
+        g.clearRect(0, 0, 1500, 1250);
+        g.drawImage(Assets.battleBackground, 0, 0, null);
+        Font fnt1 = new Font("Arial", Font.BOLD, 40);
+        g.setFont(fnt1);
+        g.setColor(Color.black);
+        g.drawString("You've lost!", 1200 / 2 + 50, 500);
+    }
+
+    public void showWinningMessage(Graphics g){
+        g.clearRect(0, 0, 1500, 1250);
+        g.drawImage(Assets.battleBackground, 0, 0, null);
+        Font fnt1 = new Font("Arial", Font.BOLD, 40);
+        g.setFont(fnt1);
+        g.setColor(Color.black);
+        g.drawString("You have defeated the enemy!", 950 / 2 + 50, 500);
     }
 }

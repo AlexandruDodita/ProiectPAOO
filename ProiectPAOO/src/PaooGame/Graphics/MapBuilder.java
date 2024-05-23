@@ -8,15 +8,18 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
 
+import PaooGame.Entity.Entity;
 import PaooGame.Game;
 import PaooGame.Tiles.*;
 import PaooGame.DatabaseManager;
+import org.w3c.dom.html.HTMLFieldSetElement;
 
 import java.awt.*;
 
 public class MapBuilder {
     final public static int mapWidth = 64; //trebuie fatait un pic sa se vada exact under se termina , pare a fi o greseala de calcul?
     final public static int mapHeight = 64;
+    private static Entity ent;
     public static TileFactory  map[][]= new TileFactory[mapWidth][mapHeight];
     public static void  draw(Graphics g){
         for(int i=0;i<mapWidth;i++){
@@ -29,11 +32,30 @@ public class MapBuilder {
                  */
             }
         }
+        switch(Game.state) {
+            case LEVEL_ONE:
+                if(ent!=null) {
+                    ent.setX(800);
+                    ent.setY(500);
+                }
+                break;
+            case LEVEL_TWO:
+                if(ent!=null) {
+                    ent.setX(800);
+                    ent.setY(500);
+                }
+                break;
+            case LEVEL_THREE:
+                System.out.println("Testing");
+                break;
+        }
     }
     public static StoneFloor sf=new StoneFloor(0);
     public static StoneWall sw = new StoneWall(1);
     public static Gate1 g1=new Gate1();
     public static Gate2 g2=new Gate2();
+    public static FieldsTile1 ft1=new FieldsTile1(2);
+    public static GrassTile grass=new GrassTile();
     public static void  mapBuilder(){
         //DatabaseManager dbManager = new DatabaseManager();
 //        for(int i=0;i<mapWidth;i++){
@@ -77,6 +99,12 @@ public class MapBuilder {
                             case 4:
                                 map[j][i]=g2;
                                 break;
+                            case 5:
+                                map[j][i]=ft1;
+                                break;
+                            case 6:
+                                map[j][i]=grass;
+                                break;
                             default:
                                 map[j][i] = null;
                                 break;
@@ -90,6 +118,10 @@ public class MapBuilder {
             if (scanner != null) {
                 scanner.close();
             }
+        }
+        ent=Game.getEntity();
+        if(ent==null){
+            ent=new Entity(Entity.EntityType.ENEMY,100);
         }
     }
 }

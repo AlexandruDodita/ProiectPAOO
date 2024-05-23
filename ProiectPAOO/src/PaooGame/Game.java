@@ -1,15 +1,18 @@
 package PaooGame;
 
+import PaooGame.Entity.Entity;
+import PaooGame.Entity.Player;
 import PaooGame.GameWindow.GameWindow;
-import PaooGame.Graphics.Assets;
-import PaooGame.Graphics.Camera;
-import PaooGame.Graphics.MapBuilder;
-import PaooGame.Graphics.MainMenu;
+import PaooGame.Graphics.*;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import static PaooGame.Graphics.MapBuilder.mapHeight;
+import static PaooGame.Graphics.MapBuilder.mapWidth;
+
 
 /*! \class Game
     \brief Clasa principala a intregului proiect. Implementeaza Game - Loop (Update -> Draw)
@@ -47,7 +50,9 @@ import java.awt.event.KeyListener;
 public class Game implements Runnable,KeyListener
 {
     private GameWindow      wnd;        /*!< Fereastra in care se va desena tabla jocului*/
-    private Player player;
+    private static Camera camera;
+    private static Player player;
+    private static Entity e;
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
@@ -67,7 +72,7 @@ public class Game implements Runnable,KeyListener
     private Graphics        g;          /*!< Referinta catre un context grafic.*/
 
     public enum GAME_STATE{
-        MENU, LEVEL_SELECTION, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE
+        MENU, LEVEL_SELECTION, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE, FIGHT_SCENE
     }
     public static GAME_STATE state=GAME_STATE.MENU;
 
@@ -107,8 +112,14 @@ public class Game implements Runnable,KeyListener
         /// Se incarca toate elementele grafice (dale)
         Assets.Init();
         player = new Player();
+        e=new Entity(Entity.EntityType.ENEMY,100);
         wnd.GetCanvas().addKeyListener(this);
         wnd.GetCanvas().addMouseListener(new MainMenu(this,g));
+        wnd.GetCanvas().addMouseListener(new FightScene(this));
+
+        int worldWidth = mapWidth * 65;
+        int worldHeight = mapHeight * 67;
+        camera = new Camera(1500, 1200, worldWidth, worldHeight);
     }
     /*! \fn public void run()
         \brief Functia ce va rula in thread-ul creat.
@@ -136,7 +147,7 @@ public class Game implements Runnable,KeyListener
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                if(state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE) {
+                if(state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE || state==GAME_STATE.FIGHT_SCENE) {
                     /// Actualizeaza pozitiile elementelor
                     Update();
                     /// Deseneaza elementele grafica in fereastra.
@@ -144,6 +155,55 @@ public class Game implements Runnable,KeyListener
                 }
                 Draw();
             }
+            //Pentru cand jucatorul pierde
+            if (player.getHealth() <= 0) {
+                wnd.showLossMessage(g);
+                bs.show();
+                g.dispose();
+
+
+                long startTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - startTime < 4000) {
+                    // Updatam bufferul pt ca mesajul sa ramana vizibil
+                    bs = wnd.GetCanvas().getBufferStrategy();
+                    g = bs.getDrawGraphics();
+                    wnd.showLossMessage(g);
+                    bs.show();
+                    g.dispose();
+                }
+
+                // Resetam viata pentru a nu ne bloca in mesajul de loss
+                player.setHealth(100);
+                Game.state = Game.GAME_STATE.MENU;
+
+                System.out.println("Returning to main menu...");
+                //break; // Break out of the loop to simulate transition
+            }
+
+            if(e!=null&&e.getHealth()<=0){
+                wnd.showWinningMessage(g);
+                bs.show();
+                g.dispose();
+
+
+                long startTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - startTime < 4000) {
+                    // Updatam bufferul pt ca mesajul sa ramana vizibil
+                    bs = wnd.GetCanvas().getBufferStrategy();
+                    g = bs.getDrawGraphics();
+                    wnd.showWinningMessage(g);
+                    bs.show();
+                    g.dispose();
+                }
+
+                // Resetam viata pentru a nu ne bloca in mesajul de loss
+                e=null;
+                Game.state = GAME_STATE.LEVEL_ONE;
+
+                System.out.println("Returning to the level...");
+                //break; // Break out of the loop to simulate transition
+            }
+
         }
 
     }
@@ -210,7 +270,10 @@ public class Game implements Runnable,KeyListener
      */
     private void Update()
     {
-        player.update();
+        player.update(e);
+        if(e!=null)
+            e.update();
+
     }
 
     /*! \fn private void Draw()
@@ -244,14 +307,21 @@ public class Game implements Runnable,KeyListener
         /// operatie de desenare
         // ...............
         //Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
-        g.translate(-Camera.getX(), -Camera.getY());
+        g.translate((int)-camera.getX(), (int)-camera.getY());
         if(state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE) {
             MapBuilder.mapBuilder();
             MapBuilder.draw(g);
             player.render(g);
+            if(e!=null)
+                e.render(g);
+            camera.centerOnEntity(player);
+            g.translate((int) camera.getX(), (int) camera.getY());
         }else if (state == GAME_STATE.MENU || state == GAME_STATE.LEVEL_SELECTION) {
             g.drawImage(Assets.background, 0, 0, null);
+            camera.backToZero();
             MainMenu.render(g);
+        }else if (state==GAME_STATE.FIGHT_SCENE){
+            FightScene.render(g);
         }
         //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
@@ -264,6 +334,8 @@ public class Game implements Runnable,KeyListener
         /// elementele grafice ce au fost desenate pe canvas).
         g.dispose();
     }
+
+
 
     //implementarea metodelor pt keylistener
     @Override
@@ -306,6 +378,22 @@ public class Game implements Runnable,KeyListener
         public void keyTyped(KeyEvent e) {
         // implementare daca o tasta a fost tastata ( apasata + eliberata )
         // nu e nevoie momentan
+    }
+
+    public static Entity getEntity(){
+        return e;
+    }
+    public static void setEntity(Entity.EntityType Type, int Health){
+        e=new Entity(Type,Health);
+    }
+
+    public static void setPlayerCoords(int newX,int newY){
+        player.setX(newX);
+        player.setY(newY);
+    }
+
+    public static Camera retCamera(){
+        return camera;
     }
 }
 

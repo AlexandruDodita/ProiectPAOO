@@ -1,5 +1,6 @@
-package PaooGame;
+package PaooGame.Entity;
 
+import PaooGame.Game;
 import PaooGame.GameWindow.GameWindow;
 
 import java.awt.*;
@@ -15,26 +16,26 @@ import PaooGame.Graphics.SpriteSheet.*; //probleme cu folosirea import-urilor
 import PaooGame.Tiles.*;
 import PaooGame.Graphics.MapBuilder.*;
 
-public class Player {
+public class Player{
     private int x, y;
     private int speed = 7;
     private BufferedImage[] idleFrames;
     private BufferedImage[] moveLeftFrames;
     private BufferedImage[] moveRightFrames;
-    private int nrIdleFrames = 6;
+    private final int nrIdleFrames = 6;
     private int nrMoveRightFrames = 6;
     private int nrMoveLeftFrames = 6;
-
+    private static int Health=100;
     private static final int frameWidth = 133;
     private static final int CollisionWidth=70; //pentru a rezolva problema cu aparenta coliziunii
     private static final int frameHeight = 71;
     private static int CameraX=0,CameraY=0;
     private int holdX,holdY;
-    private int currentFrame; // frame-ul curent din animatie
+    private int currentFrame;
 
-    private int frameDelay; //intarziere de frame-uri pentru animatii
+    private int frameDelay;
 
-    private int frameDelayCounter; //contor pentru a numara intarzierea de frame-uri
+    private int frameDelayCounter;
 
     private boolean isIdle;
     private int groundLevel;
@@ -43,7 +44,7 @@ public class Player {
     private boolean isMovingUp;
     private boolean isMovingDown;
     private boolean discovered=false;
-    boolean CollisionOn;
+    public boolean CollisionOn;
 
 
 
@@ -79,7 +80,7 @@ public class Player {
 
     }
 
-    public void update() { //construit pentru a trata coliziunile, momentan nu functioneaza conform asteptarilor
+    public void update(Entity e) { //construit pentru a trata coliziunile, momentan nu functioneaza conform asteptarilor
 
         //portiune cod actualizarea animatiei
         //actualizare idle
@@ -106,7 +107,7 @@ public class Player {
         }
 
 
-        if ((isMovingLeft || isMovingRight || isMovingDown || isMovingUp) && checkXCollision(MapBuilder.map)) {
+        if ((isMovingLeft || isMovingRight || isMovingDown || isMovingUp) && checkXCollision(MapBuilder.map,e)) {
             CollisionOn=true;
             this.stopRunning();
         }
@@ -134,13 +135,17 @@ public class Player {
         return x % Tile.TILE_WIDTH == 0;
     }
 
-    public boolean checkXCollision(TileFactory[][] map) {
+    public boolean checkXCollision(TileFactory[][] map, Entity enemy) {
         Rectangle playerBounds = new Rectangle(x+20, y, CollisionWidth, frameHeight);
 
         if (isMovingLeft) {
             playerBounds = new Rectangle(x - speed+20, y, CollisionWidth, frameHeight);
         } else if (isMovingRight) {
             playerBounds = new Rectangle(x + speed+20, y, CollisionWidth, frameHeight);
+        }
+        Rectangle enemyBounds=null;
+        if(enemy!=null) {
+            enemyBounds= new Rectangle(enemy.getX(), enemy.getY(), 128, 128);
         }
         //System.out.println("Player bounds: " + playerBounds);
 
@@ -155,13 +160,12 @@ public class Player {
                 if ((map[i][j] == null || map[i][j].getSolidState()==SolidState.NOT_SOLID) && (map[i][j]!=g1 && map[i][j]!=g2))
                     continue;
                 Rectangle tileBounds = new Rectangle(i*65,j*67,65,67);
-
                 if (playerBounds.intersects(tileBounds)) {
                     //System.out.println("Tile bounds: " + tileBounds + " " + holdX + " " +holdY);
                     if((tileBounds.getX()==holdX && tileBounds.getY()==holdY)){
                         Game.state=Game.GAME_STATE.MENU;
-                        Camera.setX(0);
-                        Camera.setY(0);
+//                        Camera.setX(0);
+//                        Camera.setY(0);
                         return false;
                     }
                     System.out.println("Collision detected with tile at x=" + i*65 + " y=" + j*67 );
@@ -182,6 +186,11 @@ public class Player {
                         moveUp(null);
                         return true;
                     }
+                }else if(enemyBounds!=null&& playerBounds.intersects(enemyBounds)){
+                    Game.state= Game.GAME_STATE.FIGHT_SCENE;
+                    modifyPlayerCamera(0,0);
+//                    Camera.setX(0);
+//                    Camera.setY(0);
                 }
 
 
@@ -218,9 +227,9 @@ public class Player {
         isMovingUp=false;
         isMovingDown=false;
         CameraX-=5;
-        Camera.setX(CameraX);
-        if(g!=null)
-            Camera.moveCamera(g);
+        //Camera.setX(CameraX);
+//        if(g!=null)
+//            Camera.moveCamera(g);
     }
 
     public void moveRight(Graphics g)
@@ -232,9 +241,9 @@ public class Player {
         isMovingUp=false;
         isMovingDown=false;
         CameraX+=5;
-        Camera.setX(CameraX);
-        if(g!=null)
-            Camera.moveCamera(g);
+        //Camera.setX(CameraX);
+//        if(g!=null)
+//            Camera.moveCamera(g);
     }
     public void moveUp(Graphics g){
         y=y-speed;
@@ -244,9 +253,9 @@ public class Player {
         isMovingUp=true;
         isMovingDown=false;
         CameraY-=5;
-        Camera.setY(CameraY);
-        if(g!=null)
-            Camera.moveCamera(g);
+        //Camera.setY(CameraY);
+//        if(g!=null)
+//            Camera.moveCamera(g);
     }
     public void moveDown(Graphics g){
         y=y+speed;
@@ -256,9 +265,9 @@ public class Player {
         isMovingUp=false;
         isMovingDown=true;
         CameraY+=5;
-        Camera.setY(CameraY);
-        if(g!=null)
-            Camera.moveCamera(g);
+        //Camera.setY(CameraY);
+//        if(g!=null)
+//            Camera.moveCamera(g);
     }
     public void stopRunning()
     {
@@ -267,5 +276,35 @@ public class Player {
         isMovingUp=false;
         isMovingDown=false;
         isIdle = true;
+    }
+
+    public int getX(){
+        return x;
+    }
+    public int getY(){
+        return y;
+    }
+
+    public void setX(int newX){
+        x=newX;
+    }
+
+    public void setY(int newY){
+        y=newY;
+    }
+
+    public int getHealth(){
+        return Health;
+    }
+    public static void setHealth(int newHealth){
+        Health=newHealth;
+    }
+
+    public static void modifyPlayerCamera(int x,int y){ //redunant momentan
+        Player invis=new Player();
+//        invis.setX(x);
+//        invis.setY(y);
+
+
     }
 }

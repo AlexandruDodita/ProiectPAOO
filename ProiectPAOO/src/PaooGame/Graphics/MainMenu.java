@@ -1,5 +1,7 @@
 package PaooGame.Graphics;
 
+import PaooGame.Entity.Entity;
+import PaooGame.Entity.Player;
 import PaooGame.Game;
 
 import java.awt.*;
@@ -59,18 +61,13 @@ public class MainMenu implements MouseListener {
         int my = e.getY();
 
         if (Game.state == Game.GAME_STATE.MENU) {
-            if (mx >= playButton.x && mx <= playButton.x + playButton.width) {
-                if (my >= playButton.y && my <= playButton.y + playButton.height) {
-                    Game.state = Game.GAME_STATE.LEVEL_SELECTION;
-                }
-            } else if (mx >= helpButton.x && mx <= helpButton.x + helpButton.width) {
-                if (my >= helpButton.y && my <= helpButton.y + helpButton.height) {
-                    System.out.println("Help was not yet implemented");
-                }
-            } else if (mx >= stopButton.x && mx <= stopButton.x + stopButton.width) {
-                if (my >= stopButton.y && my <= stopButton.y + stopButton.height) {
-                    game.StopGame();
-                }
+            if (playButton.contains(mx, my)) {
+                Game.state = Game.GAME_STATE.LEVEL_SELECTION;
+            } else if (helpButton.contains(mx, my)) {
+                System.out.println("Help was not yet implemented");
+                Game.state = Game.GAME_STATE.FIGHT_SCENE;
+            } else if (stopButton.contains(mx, my)) {
+                game.StopGame();
             }
         } else if (Game.state == Game.GAME_STATE.LEVEL_SELECTION) {
             System.out.println("Mouse clicked at: " + mx + ", " + my); // Debugging output
@@ -98,10 +95,28 @@ public class MainMenu implements MouseListener {
 //            }
             if (level1Button.contains(mx, my)) {
                 Game.state = Game.GAME_STATE.LEVEL_ONE;
+                Game.setEntity(Entity.EntityType.ENEMY,100);
+                Game.setPlayerCoords(40,900);
+                Player.setHealth(100);
+                Player.modifyPlayerCamera(0,0);
+               // Camera.setX(0);
+                //Camera.setY(0);
+
             } else if (level2Button.contains(mx, my)) {
                 Game.state = Game.GAME_STATE.LEVEL_TWO;
+                Game.setEntity(Entity.EntityType.ENEMY,100);
+                Game.setPlayerCoords(40,900);
+                Player.setHealth(100);
+                Player.modifyPlayerCamera(0,0);
+//                Camera.setX(0);
+//                Camera.setY(0);
             } else if (level3Button.contains(mx, my)) {
                 Game.state= Game.GAME_STATE.LEVEL_THREE;
+                Game.setPlayerCoords(40,900);
+                Player.setHealth(100);
+                Player.modifyPlayerCamera(0,0);
+//                Camera.setX(0);
+//                Camera.setY(0);
             }
         }
     }
