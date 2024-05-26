@@ -16,6 +16,8 @@ import PaooGame.Graphics.SpriteSheet.*; //probleme cu folosirea import-urilor
 import PaooGame.Tiles.*;
 import PaooGame.Graphics.MapBuilder.*;
 
+import javax.swing.*;
+
 public class Player{
     private int x, y;
     private int speed = 7;
@@ -45,6 +47,7 @@ public class Player{
     private boolean isMovingDown;
     private boolean discovered=false;
     public boolean CollisionOn;
+    private Entity friendly;
 
 
 
@@ -136,71 +139,89 @@ public class Player{
     }
 
     public boolean checkXCollision(TileFactory[][] map, Entity enemy) {
-        Rectangle playerBounds = new Rectangle(x+20, y, CollisionWidth, frameHeight);
+        Rectangle playerBounds = new Rectangle(x + 20, y, CollisionWidth, frameHeight);
 
         if (isMovingLeft) {
-            playerBounds = new Rectangle(x - speed+20, y, CollisionWidth, frameHeight);
+            playerBounds = new Rectangle(x - speed + 20, y, CollisionWidth, frameHeight);
         } else if (isMovingRight) {
-            playerBounds = new Rectangle(x + speed+20, y, CollisionWidth, frameHeight);
+            playerBounds = new Rectangle(x + speed + 20, y, CollisionWidth, frameHeight);
         }
-        Rectangle enemyBounds=null;
-        if(enemy!=null) {
-            enemyBounds= new Rectangle(enemy.getX(), enemy.getY(), 128, 128);
-        }
-        //System.out.println("Player bounds: " + playerBounds);
 
-        for(int i=0;i< MapBuilder.mapWidth;i++) {
+        Rectangle enemyBounds = null;
+        if (enemy != null) {
+            enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), 128, 128);
+        }
+
+        Rectangle friendlyBounds = null;
+        if ((friendly = Game.getFriendly()) != null) {
+            friendlyBounds = new Rectangle(friendly.getX(), friendly.getY(), 128, 128);
+        }
+
+        Graphics g = Game.getGraphicalContext();
+        if (g == null)
+            System.out.println("Ai un milion pana luni?");
+
+        for (int i = 0; i < MapBuilder.mapWidth; i++) {
             for (int j = 0; j < MapBuilder.mapHeight; j++) {
-                if((map[i][j]==g1 || map[i][j]==g2) && !discovered){
-                    System.out.println("DEBUG: gate hitbox are: " + i*65 +" "+ j*67);
-                    holdX=i*65;
-                    holdY=j*67;
-                    discovered=true;
+                if ((map[i][j] == g1 || map[i][j] == g2) ) {
+                   // System.out.println("DEBUG: gate hitbox are: " + i * 65 + " " + j * 67);
+                    holdX = i * 65;
+                    holdY = j * 67;
+                    discovered = true;
                 }
-                if ((map[i][j] == null || map[i][j].getSolidState()==SolidState.NOT_SOLID) && (map[i][j]!=g1 && map[i][j]!=g2))
+
+                if ((map[i][j] == null || map[i][j].getSolidState() == SolidState.NOT_SOLID) && (map[i][j] != g1 && map[i][j] != g2))
                     continue;
-                Rectangle tileBounds = new Rectangle(i*65,j*67,65,67);
+
+                Rectangle tileBounds = new Rectangle(i * 65, j * 67, 65, 67);
                 if (playerBounds.intersects(tileBounds)) {
-                    //System.out.println("Tile bounds: " + tileBounds + " " + holdX + " " +holdY);
-                    if((tileBounds.getX()==holdX && tileBounds.getY()==holdY)){
-                        Game.state=Game.GAME_STATE.MENU;
-//                        Camera.setX(0);
-//                        Camera.setY(0);
+                    if ((tileBounds.getX() == holdX && tileBounds.getY() == holdY)) {
+                        Game.state = Game.GAME_STATE.MENU;
                         return false;
                     }
-                    System.out.println("Collision detected with tile at x=" + i*65 + " y=" + j*67 );
+                    System.out.println("Collision detected with tile at x=" + i * 65 + " y=" + j * 67);
                     if (isMovingLeft) {
                         stopRunning();
                         moveRight(null);
                         return true;
-                    }else if(isMovingRight){
+                    } else if (isMovingRight) {
                         stopRunning();
                         moveLeft(null);
                         return true;
-                    }else if(isMovingUp){
+                    } else if (isMovingUp) {
                         stopRunning();
                         moveDown(null);
                         return true;
-                    }else if(isMovingDown){
+                    } else if (isMovingDown) {
                         stopRunning();
                         moveUp(null);
                         return true;
                     }
-                }else if(enemyBounds!=null&& playerBounds.intersects(enemyBounds)){
-                    Game.state= Game.GAME_STATE.FIGHT_SCENE;
-                    modifyPlayerCamera(0,0);
-//                    Camera.setX(0);
-//                    Camera.setY(0);
+                } else if (enemyBounds != null && playerBounds.intersects(enemyBounds)) {
+                    Game.state = Game.GAME_STATE.FIGHT_SCENE;
+                    modifyPlayerCamera(0, 0);
                 }
 
 
-                // Dacă nu s-a detectat nicio coliziune, return false
-
             }
+        }
+        if (friendlyBounds != null && playerBounds.intersects(friendlyBounds)) {
+             double playerX = friendlyBounds.getX();
+             double playerY = friendlyBounds.getY();
+
+            // Use SwingUtilities.invokeLater to ensure the drawing happens on the EDT
+//            SwingUtilities.invokeLater(() -> {
+//                //System.out.println("DEBUG: Calling drawMessage");
+//
+//            });
+            Game.drawMessage(playerX, playerY);
+
         }
         CollisionOn = false;
         return false;
     }
+
+
 
     private BufferedImage getCurrentAnimationFrame() //obine cadrul curent al animatiei, nefolosit
     {

@@ -20,12 +20,14 @@ public class MapBuilder {
     final public static int mapWidth = 64; //trebuie fatait un pic sa se vada exact under se termina , pare a fi o greseala de calcul?
     final public static int mapHeight = 64;
     private static Entity ent;
+    private static Entity ent2;
+    private static Entity friendlyMap;
     public static TileFactory  map[][]= new TileFactory[mapWidth][mapHeight];
     public static void  draw(Graphics g){
         for(int i=0;i<mapWidth;i++){
             for(int j=0;j<mapHeight;j++){
                 if(map[i][j]!=null)
-                g.drawImage(map[i][j].getImage(),i*65,j*67,65,67,null);
+                    g.drawImage(map[i][j].getImage(),i*65,j*67,65,67,null);
 
                 /*g.setColor(Color.RED);
                 g.drawRect(i * 65, j * 67, 65, 67); //Folosit pentru a vedea hitbox-ul unui tile. A fi folosit in parelel cu echivalentul din Player.java
@@ -37,16 +39,32 @@ public class MapBuilder {
                 if(ent!=null) {
                     ent.setX(800);
                     ent.setY(500);
+                    friendlyMap=null;
+                    ent2=null;
+                    //System.out.println("ent2 " + ent2.getX() + " " + ent2.getY());
                 }
                 break;
             case LEVEL_TWO:
                 if(ent!=null) {
-                    ent.setX(800);
-                    ent.setY(500);
+                    ent.setX(2100);
+                    ent.setY(1175);
+                    if(ent2!=null) {
+                        ent2.setX(1000);
+                        ent2.setY(700);
+                    }
+                    friendlyMap=null;
                 }
                 break;
             case LEVEL_THREE:
-                System.out.println("Testing");
+                if(ent!=null) {
+                    ent.setX(2000);
+                    ent.setY(1170);
+                    if(friendlyMap!=null) {
+                        friendlyMap.setX(1000);
+                        friendlyMap.setY(700);
+                    }
+
+                }
                 break;
         }
     }
@@ -56,6 +74,9 @@ public class MapBuilder {
     public static Gate2 g2=new Gate2();
     public static FieldsTile1 ft1=new FieldsTile1(2);
     public static GrassTile grass=new GrassTile();
+    public static BuildingWall wall=new BuildingWall();
+    public static DecorA decorA=new DecorA();
+    public static DecorB decorB=new DecorB();
     public static void  mapBuilder(){
         //DatabaseManager dbManager = new DatabaseManager();
 //        for(int i=0;i<mapWidth;i++){
@@ -105,6 +126,15 @@ public class MapBuilder {
                             case 6:
                                 map[j][i]=grass;
                                 break;
+                            case 7:
+                                map[j][i]=wall;
+                                break;
+                            case 8:
+                                map[j][i]=decorA;
+                                break;
+                            case 9:
+                                map[j][i]=decorB;
+                                break;
                             default:
                                 map[j][i] = null;
                                 break;
@@ -122,6 +152,14 @@ public class MapBuilder {
         ent=Game.getEntity();
         if(ent==null){
             ent=new Entity(Entity.EntityType.ENEMY,100);
+        }
+        ent2=Game.getEntity2();
+        if(ent2==null){
+            ent2=new Entity(Entity.EntityType.ENEMY,100);
+        }
+        friendlyMap=Game.getFriendly();
+        if(friendlyMap==null){
+            friendlyMap=new Entity(Entity.EntityType.FRIENDLY,100);
         }
     }
 }

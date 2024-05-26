@@ -65,7 +65,6 @@ public class MainMenu implements MouseListener {
                 Game.state = Game.GAME_STATE.LEVEL_SELECTION;
             } else if (helpButton.contains(mx, my)) {
                 System.out.println("Help was not yet implemented");
-                Game.state = Game.GAME_STATE.FIGHT_SCENE;
             } else if (stopButton.contains(mx, my)) {
                 game.StopGame();
             }
@@ -95,7 +94,9 @@ public class MainMenu implements MouseListener {
 //            }
             if (level1Button.contains(mx, my)) {
                 Game.state = Game.GAME_STATE.LEVEL_ONE;
+                Game.currentLevel= Game.GAME_STATE.LEVEL_ONE;
                 Game.setEntity(Entity.EntityType.ENEMY,100);
+                Game.setEntity2(Entity.EntityType.ENEMY,200);
                 Game.setPlayerCoords(40,900);
                 Player.setHealth(100);
                 Player.modifyPlayerCamera(0,0);
@@ -104,7 +105,8 @@ public class MainMenu implements MouseListener {
 
             } else if (level2Button.contains(mx, my)) {
                 Game.state = Game.GAME_STATE.LEVEL_TWO;
-                Game.setEntity(Entity.EntityType.ENEMY,100);
+                Game.currentLevel= Game.GAME_STATE.LEVEL_TWO;
+                Game.setEntity(Entity.EntityType.ENEMY,200);
                 Game.setPlayerCoords(40,900);
                 Player.setHealth(100);
                 Player.modifyPlayerCamera(0,0);
@@ -112,7 +114,10 @@ public class MainMenu implements MouseListener {
 //                Camera.setY(0);
             } else if (level3Button.contains(mx, my)) {
                 Game.state= Game.GAME_STATE.LEVEL_THREE;
+                Game.currentLevel= Game.GAME_STATE.LEVEL_THREE;
                 Game.setPlayerCoords(40,900);
+                Game.setEntity(Entity.EntityType.ENEMY,400);
+                Game.setFriendly(100);
                 Player.setHealth(100);
                 Player.modifyPlayerCamera(0,0);
 //                Camera.setX(0);

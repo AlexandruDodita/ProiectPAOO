@@ -100,6 +100,12 @@ public class GameWindow
             /// ca tot ce contine sa poate fi afisat complet
         wndFrame.pack();
     }
+    public void closeWindow() {
+        if (wndFrame != null) {
+            wndFrame.dispose(); // Dispose of the window
+        }
+
+    }
 
     /*! \fn public int GetWndWidth()
         \brief Returneaza latimea ferestrei.
@@ -140,4 +146,15 @@ public class GameWindow
         g.setColor(Color.black);
         g.drawString("You have defeated the enemy!", 950 / 2 + 50, 500);
     }
+
+//    public static void drawMessage(double x, double y, Graphics g) {
+//        if (g != null) {
+//            // Replace with actual message drawing code
+//            g.setColor(Color.BLACK);
+//            g.drawString("Ai un milion pana luni?", (int)x, (int)y);
+//        } else {
+//            System.out.println("DEBUG: Graphics context is null");
+//        }
+//    }
 }
+

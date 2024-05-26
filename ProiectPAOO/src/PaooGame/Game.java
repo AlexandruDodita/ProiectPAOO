@@ -5,13 +5,13 @@ import PaooGame.Entity.Player;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.*;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import static PaooGame.Graphics.MapBuilder.mapHeight;
-import static PaooGame.Graphics.MapBuilder.mapWidth;
+import static PaooGame.Graphics.MapBuilder.*;
 
 
 /*! \class Game
@@ -53,9 +53,13 @@ public class Game implements Runnable,KeyListener
     private static Camera camera;
     private static Player player;
     private static Entity e;
+    private static Entity e2;
+    private static Entity friendly;
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
+    private static boolean drawMsg;
+
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -69,12 +73,13 @@ public class Game implements Runnable,KeyListener
     ///                 *              *          *               *        *             *
     ///                 ****************          *****************        ***************
 
-    private Graphics        g;          /*!< Referinta catre un context grafic.*/
+    private static Graphics        g;          /*!< Referinta catre un context grafic.*/
 
     public enum GAME_STATE{
         MENU, LEVEL_SELECTION, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE, FIGHT_SCENE
     }
     public static GAME_STATE state=GAME_STATE.MENU;
+    public static GAME_STATE currentLevel=GAME_STATE.MENU;
 
     //private Tile[] tileArray;
 
@@ -112,7 +117,7 @@ public class Game implements Runnable,KeyListener
         /// Se incarca toate elementele grafice (dale)
         Assets.Init();
         player = new Player();
-        e=new Entity(Entity.EntityType.ENEMY,100);
+
         wnd.GetCanvas().addKeyListener(this);
         wnd.GetCanvas().addMouseListener(new MainMenu(this,g));
         wnd.GetCanvas().addMouseListener(new FightScene(this));
@@ -198,7 +203,30 @@ public class Game implements Runnable,KeyListener
 
                 // Resetam viata pentru a nu ne bloca in mesajul de loss
                 e=null;
-                Game.state = GAME_STATE.LEVEL_ONE;
+                Game.state = Game.currentLevel;
+
+                System.out.println("Returning to the level...");
+                //break; // Break out of the loop to simulate transition
+            }
+            if(e2!=null&&e2.getHealth()<=0){
+                wnd.showWinningMessage(g);
+                bs.show();
+                g.dispose();
+
+
+                long startTime = System.currentTimeMillis();
+                while (System.currentTimeMillis() - startTime < 4000) {
+                    // Updatam bufferul pt ca mesajul sa ramana vizibil
+                    bs = wnd.GetCanvas().getBufferStrategy();
+                    g = bs.getDrawGraphics();
+                    wnd.showWinningMessage(g);
+                    bs.show();
+                    g.dispose();
+                }
+
+                // Resetam viata pentru a nu ne bloca in mesajul de loss
+                e2=null;
+                Game.state = Game.currentLevel;
 
                 System.out.println("Returning to the level...");
                 //break; // Break out of the loop to simulate transition
@@ -249,6 +277,7 @@ public class Game implements Runnable,KeyListener
                     /// Metoda join() pune un thread in asteptare panca cand un altul isi termina executie.
                     /// Totusi, in situatia de fata efectul apelului este de oprire a threadului.
                 gameThread.join();
+                wnd.closeWindow();
             }
             catch(InterruptedException ex)
             {
@@ -273,7 +302,11 @@ public class Game implements Runnable,KeyListener
         player.update(e);
         if(e!=null)
             e.update();
-
+        if(e2!=null)
+            e2.update();
+        if(friendly!=null){
+            friendly.update();
+        }
     }
 
     /*! \fn private void Draw()
@@ -314,14 +347,40 @@ public class Game implements Runnable,KeyListener
             player.render(g);
             if(e!=null)
                 e.render(g);
+            if(  state==GAME_STATE.LEVEL_TWO  ) {
+                if (e2 != null)
+                    e2.render(g);
+
+            }
+            if(  state==GAME_STATE.LEVEL_THREE ) {
+                if (friendly != null) {
+                    friendly.render(g);
+                }
+            }
             camera.centerOnEntity(player);
-            g.translate((int) camera.getX(), (int) camera.getY());
+            //g.translate((int) camera.getX(), (int) camera.getY());
         }else if (state == GAME_STATE.MENU || state == GAME_STATE.LEVEL_SELECTION) {
             g.drawImage(Assets.background, 0, 0, null);
             camera.backToZero();
             MainMenu.render(g);
         }else if (state==GAME_STATE.FIGHT_SCENE){
             FightScene.render(g);
+        }
+        if(drawMsg){
+            if (g != null) {
+                // Replace with actual message drawing code
+                Font fnt0=new Font("Arial",Font.PLAIN,25);
+                g.setFont(fnt0);
+                g.setColor(Color.BLACK);
+                g.drawString("Ai un milion pana luni?", (int)friendly.getX(), (int)friendly.getY());
+            } else {
+                System.out.println("DEBUG: Graphics context is null");
+            }
+            new Timer(40000, e -> {
+                g.clearRect((int) friendly.getX(), (int) friendly.getY() - 100, 500, 100); // Adjust the dimensions as needed
+                ((Timer) e.getSource()).stop();
+            }).start();
+            drawMsg=false;
         }
         //     g.drawRect(1 * Tile.TILE_WIDTH, 1 * Tile.TILE_HEIGHT, Tile.TILE_WIDTH, Tile.TILE_HEIGHT);
 
@@ -346,7 +405,7 @@ public class Game implements Runnable,KeyListener
                 if (keyCode == KeyEvent.VK_A) {
                     // tasta A misca jucatorul la stanga
                     player.moveLeft(g);
-                    //System.out.println("Misc Stanga"); //debug
+                   // System.out.println("Misc Stanga"); //debug
                 } else if (keyCode == KeyEvent.VK_D) {
                     // D misca la dreapta
                     player.moveRight(g);
@@ -383,10 +442,21 @@ public class Game implements Runnable,KeyListener
     public static Entity getEntity(){
         return e;
     }
+    public static Entity getEntity2(){
+        return e2;
+    }
+    public static Entity getFriendly(){
+        return friendly;
+    }
     public static void setEntity(Entity.EntityType Type, int Health){
         e=new Entity(Type,Health);
     }
-
+    public static void setEntity2(Entity.EntityType Type, int Health){
+        e2=new Entity(Type,Health);
+    }
+    public static void setFriendly(int Health){
+        friendly=new Entity(Entity.EntityType.FRIENDLY, Health);
+    }
     public static void setPlayerCoords(int newX,int newY){
         player.setX(newX);
         player.setY(newY);
@@ -394,6 +464,12 @@ public class Game implements Runnable,KeyListener
 
     public static Camera retCamera(){
         return camera;
+    }
+    public static Graphics getGraphicalContext(){
+        return g;
+    }
+    public static void drawMessage(double x, double y) {
+        drawMsg=true;
     }
 }
 

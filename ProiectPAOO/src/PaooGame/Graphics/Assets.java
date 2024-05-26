@@ -1,5 +1,6 @@
 package PaooGame.Graphics;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /*! \class public class Assets
@@ -24,6 +25,10 @@ public class Assets
 
     public static BufferedImage fieldTile1;
     public static BufferedImage grassTile;
+
+    public static BufferedImage wallTwo;
+    public static BufferedImage decorA;
+    public static BufferedImage decorB;
 
 
     /*! \fn public static void Init()
@@ -54,5 +59,8 @@ public class Assets
         battleBackground=ImageLoader.LoadImage("/textures/backgrounds/Battleground2.png");
         fieldTile1=ImageLoader.LoadImage("/textures/tiles/FieldsCollection/FieldsTile_01.png");
         grassTile=ImageLoader.LoadImage("/textures/tiles/Ground_Tile_01_B.png");
+        wallTwo= ImageLoader.LoadImage("/textures/tiles/decor/Building_B_01.png");
+        decorA=ImageLoader.LoadImage("/textures/tiles/decor/Decor_Tile_A_05.png");
+        decorB=ImageLoader.LoadImage("/textures/tiles/decor/Decor_Tile_B_05.png");
     }
 }

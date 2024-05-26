@@ -32,6 +32,11 @@ public class Entity {
             for (int i = 0; i < 4; i++) {
                 idleFrames[i] = EnemyIdle.cropMainChar(i, 0, 128 , 128);
             }
+        } else if(type==EntityType.FRIENDLY) {
+            idleFrames = new BufferedImage[4];
+            for (int i = 0; i < 4; i++) {
+                idleFrames[i] = EnemyIdle.cropMainChar(i, 0, 128 , 128);
+            }
         }
         currentFrame = 0; //frame-urile incep de la 0
         frameDelay = 3;     //cu un delay de 3 frame-uri
