@@ -4,6 +4,7 @@ import PaooGame.Entity.Entity;
 import PaooGame.Entity.Player;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.*;
+import PaooGame.Save;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,7 +60,7 @@ public class Game implements Runnable,KeyListener
     private Thread          gameThread; /*!< Referinta catre thread-ul de update si draw al ferestrei*/
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
     private static boolean drawMsg;
-
+    public Save save;
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -121,6 +122,8 @@ public class Game implements Runnable,KeyListener
         wnd.GetCanvas().addKeyListener(this);
         wnd.GetCanvas().addMouseListener(new MainMenu(this,g));
         wnd.GetCanvas().addMouseListener(new FightScene(this));
+        save= new Save();
+        save.database();
 
         int worldWidth = mapWidth * 65;
         int worldHeight = mapHeight * 67;
@@ -417,8 +420,21 @@ public class Game implements Runnable,KeyListener
                 } else if (keyCode == KeyEvent.VK_S) {
                     player.moveDown(g);
                     //System.out.println("Misc Jos");
+                }  else if (keyCode == KeyEvent.VK_L) {
+                    int level=0;
+                    if(state==GAME_STATE.LEVEL_ONE){
+                        level=2;
+                    }else if(state==GAME_STATE.LEVEL_TWO){
+                        level=3;
+                    }else if(state==GAME_STATE.LEVEL_THREE){
+                    }
+                    Save.insertData(level,0,0,0,0);
+                    //System.out.print("Score saved");
                 }
-            }else{
+            }else if(keyCode == KeyEvent.VK_R){
+                System.out.println("Progress resetted.");
+                Save.insertData(0,0,0,0,0);
+            } else{
                 player.CollisionOn=false;
                 player.stopRunning();
             }

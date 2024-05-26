@@ -3,6 +3,7 @@ package PaooGame.Graphics;
 import PaooGame.Entity.Entity;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
+import PaooGame.Save;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -92,6 +93,7 @@ public class MainMenu implements MouseListener {
 //                    MapBuilder.mapBuilder();
 //                }
 //            }
+            int saveChecker=Save.converterData();
             if (level1Button.contains(mx, my)) {
                 Game.state = Game.GAME_STATE.LEVEL_ONE;
                 Game.currentLevel= Game.GAME_STATE.LEVEL_ONE;
@@ -103,7 +105,7 @@ public class MainMenu implements MouseListener {
                // Camera.setX(0);
                 //Camera.setY(0);
 
-            } else if (level2Button.contains(mx, my)) {
+            } else if (level2Button.contains(mx, my) && saveChecker==2 || saveChecker == 3) {
                 Game.state = Game.GAME_STATE.LEVEL_TWO;
                 Game.currentLevel= Game.GAME_STATE.LEVEL_TWO;
                 Game.setEntity(Entity.EntityType.ENEMY,200);
@@ -112,7 +114,7 @@ public class MainMenu implements MouseListener {
                 Player.modifyPlayerCamera(0,0);
 //                Camera.setX(0);
 //                Camera.setY(0);
-            } else if (level3Button.contains(mx, my)) {
+            } else if (level3Button.contains(mx, my) && saveChecker==3) {
                 Game.state= Game.GAME_STATE.LEVEL_THREE;
                 Game.currentLevel= Game.GAME_STATE.LEVEL_THREE;
                 Game.setPlayerCoords(40,900);
@@ -122,6 +124,8 @@ public class MainMenu implements MouseListener {
                 Player.modifyPlayerCamera(0,0);
 //                Camera.setX(0);
 //                Camera.setY(0);
+            }else{
+                System.out.println("LEVEL LOCKED. COMPLETE PREVIOUS LEVEL FIRST!");
             }
         }
     }
