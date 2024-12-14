@@ -4,12 +4,11 @@ import PaooGame.Entity.Entity;
 import PaooGame.Entity.Player;
 import PaooGame.GameWindow.GameWindow;
 import PaooGame.Graphics.*;
-import PaooGame.Save;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -50,12 +49,12 @@ import static PaooGame.Graphics.MapBuilder.*;
         - public synchronized void start(); //metoda publica de pornire a jocului
         - public synchronized void stop()   //metoda publica de oprire a jocului
  */
-public class Game implements Runnable,KeyListener
+public class Game implements Runnable,KeyListener, MouseListener
 {
     private GameWindow      wnd;        /*!< Fereastra in care se va desena tabla jocului*/
     private static Camera camera;
     private static Player player;
-    private static Entity e;
+    private static Entity enemy1;
     private static Entity e2;
     private static Entity friendly;
     private boolean         runState;   /*!< Flag ce starea firului de executie.*/
@@ -77,6 +76,8 @@ public class Game implements Runnable,KeyListener
     ///                 ****************          *****************        ***************
 
     private static Graphics        g;          /*!< Referinta catre un context grafic.*/
+
+
 
     public enum GAME_STATE{
         MENU, LEVEL_SELECTION, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE, FIGHT_SCENE
@@ -122,8 +123,12 @@ public class Game implements Runnable,KeyListener
         player = new Player();
         MainMenu menu = new MainMenu(this,g);
         wnd.GetCanvas().addKeyListener(this);
-        wnd.GetCanvas().addMouseListener(menu);
-        wnd.GetCanvas().addMouseMotionListener(menu);
+        if(menu!=null) {
+            wnd.GetCanvas().addMouseListener(menu);
+            wnd.GetCanvas().addMouseMotionListener(menu);
+        }
+        wnd.GetCanvas().addMouseListener(this);
+
         wnd.GetCanvas().addMouseListener(new FightScene(this));
 
         MainMenu.initialize();
@@ -194,7 +199,7 @@ public class Game implements Runnable,KeyListener
                 //break; // Break out of the loop to simulate transition
             }
 
-            if(e!=null&&e.getHealth()<=0){
+            if(enemy1 !=null&& enemy1.getHealth()<=0){
                 wnd.showWinningMessage(g);
                 bs.show();
                 g.dispose();
@@ -211,7 +216,7 @@ public class Game implements Runnable,KeyListener
                 }
 
                 // Resetam viata pentru a nu ne bloca in mesajul de loss
-                e=null;
+                enemy1 =null;
                 Game.state = Game.currentLevel;
 
                 System.out.println("Returning to the level...");
@@ -308,9 +313,10 @@ public class Game implements Runnable,KeyListener
      */
     private void Update()
     {
-        player.update(e);
-        if(e!=null)
-            e.update();
+        player.setEnemy(enemy1);
+        player.update();
+        if(enemy1 !=null)
+            enemy1.update();
         if(e2!=null)
             e2.update();
         if(friendly!=null){
@@ -354,8 +360,8 @@ public class Game implements Runnable,KeyListener
             MapBuilder.mapBuilder();
             MapBuilder.draw(g);
             player.render(g);
-            if(e!=null)
-                e.render(g);
+            if(enemy1 !=null)
+                enemy1.render(g);
             if(  state==GAME_STATE.LEVEL_TWO  ) {
                 if (e2 != null)
                     e2.render(g);
@@ -373,7 +379,7 @@ public class Game implements Runnable,KeyListener
             camera.backToZero();
             MainMenu.render(g);
         }else if (state==GAME_STATE.FIGHT_SCENE){
-            FightScene.render(g);
+            //FightScene.render(g); //old combat
         }
         if(drawMsg){
             if (g != null) {
@@ -462,7 +468,7 @@ public class Game implements Runnable,KeyListener
     }
 
     public static Entity getEntity(){
-        return e;
+        return enemy1;
     }
     public static Entity getEntity2(){
         return e2;
@@ -471,13 +477,13 @@ public class Game implements Runnable,KeyListener
         return friendly;
     }
     public static void setEntity(Entity.EntityType Type, int Health){
-        e=new Entity(Type,Health);
+        enemy1 =new Entity(Type,Health,true);
     }
     public static void setEntity2(Entity.EntityType Type, int Health){
-        e2=new Entity(Type,Health);
+        e2=new Entity(Type,Health,true);
     }
     public static void setFriendly(int Health){
-        friendly=new Entity(Entity.EntityType.FRIENDLY, Health);
+        friendly=new Entity(Entity.EntityType.FRIENDLY, Health,false);
     }
     public static void setPlayerCoords(int newX,int newY){
         player.setX(newX);
@@ -492,6 +498,37 @@ public class Game implements Runnable,KeyListener
     }
     public static void drawMessage(double x, double y) {
         drawMsg=true;
+    }
+
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if(state != GAME_STATE.MENU && state!=GAME_STATE.LEVEL_SELECTION) {
+            if(Player.getEnemyCollision()){
+                enemy1.setHealth(enemy1.getHealth()-10);
+                System.out.println("New health" + enemy1.getHealth());
+            }
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
     }
 }
 

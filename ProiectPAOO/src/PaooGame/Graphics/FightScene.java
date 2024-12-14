@@ -19,7 +19,7 @@ public class FightScene implements MouseListener {
     public FightScene(Game game){
         this.game=game;
         player=new Player();
-        enemy =new Entity(Entity.EntityType.ENEMY,100);
+        enemy =new Entity(Entity.EntityType.ENEMY,100, true);
 
     }
 
@@ -35,7 +35,7 @@ public class FightScene implements MouseListener {
         enemy.setY(425);
         g.drawImage(Assets.battleBackground,0,0,null);
         player.render(g);
-        player.update(enemy);
+        player.update();
         enemy.render(g);
         enemy.update();
 

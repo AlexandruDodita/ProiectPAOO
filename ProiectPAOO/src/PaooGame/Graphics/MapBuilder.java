@@ -151,15 +151,15 @@ public class MapBuilder {
         }
         ent=Game.getEntity();
         if(ent==null){
-            ent=new Entity(Entity.EntityType.ENEMY,100);
+            ent=new Entity(Entity.EntityType.ENEMY,100, true);
         }
         ent2=Game.getEntity2();
         if(ent2==null){
-            ent2=new Entity(Entity.EntityType.ENEMY,100);
+            ent2=new Entity(Entity.EntityType.ENEMY,100, true);
         }
         friendlyMap=Game.getFriendly();
         if(friendlyMap==null){
-            friendlyMap=new Entity(Entity.EntityType.FRIENDLY,100);
+            friendlyMap=new Entity(Entity.EntityType.FRIENDLY,100,false);
         }
     }
 }

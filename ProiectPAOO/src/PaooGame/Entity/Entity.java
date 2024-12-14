@@ -13,19 +13,21 @@ public class Entity {
     }
 
     private EntityType type;
-    private static int Health;
+    private int Health;
     private int x=0, y=0;
+    private int centerX = 40, centerY = 20;
     private int movingSpeed=7;
     private BufferedImage[] idleFrames;
     private int currentFrame;
-
+    private boolean displayHealth;
     private int frameDelay;
 
     private int frameDelayCounter;
 
-    public Entity(EntityType newType, int newHealth){
+    public Entity(EntityType newType, int newHealth, boolean displayHealth){
         type=newType;
         Health=newHealth;
+        this.displayHealth=displayHealth;
 
         if(type==EntityType.ENEMY) {
             idleFrames = new BufferedImage[4];
@@ -58,6 +60,13 @@ public class Entity {
         /*g.setColor(Color.GREEN);
         g.drawRect(x+20, y, CollisionWidth, frameHeight); //Folosit pentru a vedea hitbox-ul player-ului. Trebuie folosit in paralel cu echivalentul din MapBuilder
          */
+
+        if(displayHealth){
+            g.setColor(Color.BLACK);
+            g.drawRect(x+centerX-1, y+centerY-1, getHealth(), 6);
+            g.setColor(Color.RED);
+            g.fillRect(x+centerX,y+centerY, getHealth(), 5);
+        }
     }
 
     public int getX(){

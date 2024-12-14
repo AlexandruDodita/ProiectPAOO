@@ -1,24 +1,20 @@
 package PaooGame.Entity;
 
 import PaooGame.Game;
-import PaooGame.GameWindow.GameWindow;
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 
 import static PaooGame.Graphics.Assets.*;
 import static PaooGame.Graphics.MapBuilder.g1;
 import static PaooGame.Graphics.MapBuilder.g2;
 
-import PaooGame.Graphics.Camera;
 import PaooGame.Graphics.MapBuilder;
-import PaooGame.Graphics.SpriteSheet.*; //probleme cu folosirea import-urilor
 import PaooGame.Tiles.*;
-import PaooGame.Graphics.MapBuilder.*;
 
-import javax.swing.*;
-
-public class Player{
+public class Player {
     private int x, y;
     private int speed = 7;
     private BufferedImage[] idleFrames;
@@ -48,8 +44,8 @@ public class Player{
     private boolean discovered=false;
     public boolean CollisionOn;
     private Entity friendly;
-
-
+    private static boolean enemyCollision;
+    private static Entity enemy;
 
 
     public Player() {
@@ -83,7 +79,7 @@ public class Player{
 
     }
 
-    public void update(Entity e) { //construit pentru a trata coliziunile, momentan nu functioneaza conform asteptarilor
+    public void update() { //construit pentru a trata coliziunile, momentan nu functioneaza conform asteptarilor
 
         //portiune cod actualizarea animatiei
         //actualizare idle
@@ -110,7 +106,7 @@ public class Player{
         }
 
 
-        if ((isMovingLeft || isMovingRight || isMovingDown || isMovingUp) && checkXCollision(MapBuilder.map,e)) {
+        if ((isMovingLeft || isMovingRight || isMovingDown || isMovingUp) && checkXCollision(MapBuilder.map)) {
             CollisionOn=true;
             this.stopRunning();
         }
@@ -138,7 +134,7 @@ public class Player{
         return x % Tile.TILE_WIDTH == 0;
     }
 
-    public boolean checkXCollision(TileFactory[][] map, Entity enemy) {
+    public boolean checkXCollision(TileFactory[][] map) {
         Rectangle playerBounds = new Rectangle(x + 20, y, CollisionWidth, frameHeight);
 
         if (isMovingLeft) {
@@ -198,8 +194,9 @@ public class Player{
                         return true;
                     }
                 } else if (enemyBounds != null && playerBounds.intersects(enemyBounds)) {
-                    Game.state = Game.GAME_STATE.FIGHT_SCENE;
-                    modifyPlayerCamera(0, 0);
+                    enemyCollision = true;
+                }else{
+                    enemyCollision=false;
                 }
 
 
@@ -326,6 +323,15 @@ public class Player{
 //        invis.setX(x);
 //        invis.setY(y);
 
+    }
 
+    public static void setEnemy(Entity e){
+        enemy=e;
+    }
+    public static Entity getEnemy(){
+        return enemy;
+    }
+    public static boolean getEnemyCollision(){
+        return enemyCollision;
     }
 }

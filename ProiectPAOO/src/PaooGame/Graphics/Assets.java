@@ -1,6 +1,5 @@
 package PaooGame.Graphics;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /*! \class public class Assets
@@ -41,10 +40,10 @@ public class Assets
     {
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
       //  SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/PaooGameSpriteSheet.png"));
-        playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerIdle.png"));
-        playerRunLeft=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerRunLeft.png"));
-        playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerRunRight.png"));
-        EnemyIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/Idle.png"));
+        playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/playerIdle.png"));
+        playerRunLeft=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/playerRunLeft.png"));
+        playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/playerRunRight.png"));
+        EnemyIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/otherAnim/Idle.png"));
         //SpriteSheet props=new SpriteSheet(ImageLoader.LoadImage("/textures/Props.png"));
         SpriteSheet floor=new SpriteSheet(ImageLoader.LoadImage("/textures/tiles/floorTiles.png"));
         SpriteSheet walls = new SpriteSheet(ImageLoader.LoadImage("/textures/tiles/walltile.png"));
