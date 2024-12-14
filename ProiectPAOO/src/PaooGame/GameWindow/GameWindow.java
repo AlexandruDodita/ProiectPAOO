@@ -14,8 +14,8 @@ import java.awt.*;
  */
 public class GameWindow
 {
-    public static final int WIDTH = 1920;
-    public static final int HEIGHT = 1080;
+    public static final int WIDTH = 1280;
+    public static final int HEIGHT = 720;
     private JFrame  wndFrame;       /*!< fereastra principala a jocului*/
     private String  wndTitle;       /*!< titlul ferestrei*/
     private int     wndWidth;       /*!< latimea ferestrei in pixeli*/
@@ -135,7 +135,7 @@ public class GameWindow
         Font fnt1 = new Font("Arial", Font.BOLD, 40);
         g.setFont(fnt1);
         g.setColor(Color.black);
-        g.drawString("You've lost!", 1200 / 2 + 50, 500);
+        g.drawString("You've lost!", WIDTH / 2 + 50, HEIGHT);
     }
 
     public void showWinningMessage(Graphics g){
@@ -144,7 +144,7 @@ public class GameWindow
         Font fnt1 = new Font("Arial", Font.BOLD, 40);
         g.setFont(fnt1);
         g.setColor(Color.black);
-        g.drawString("You have defeated the enemy!", 950 / 2 + 50, 500);
+        g.drawString("You have defeated the enemy!", (WIDTH-250) / 2 + 50, HEIGHT); //1200 500
     }
 
 //    public static void drawMessage(double x, double y, Graphics g) {
@@ -156,5 +156,12 @@ public class GameWindow
 //            System.out.println("DEBUG: Graphics context is null");
 //        }
 //    }
+
+    public static int getWidth(){
+        return WIDTH;
+    }
+    public static int getHeight(){
+        return HEIGHT;
+    }
 }
 

@@ -8,6 +8,8 @@ import PaooGame.Save;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -112,15 +114,16 @@ public class Game implements Runnable,KeyListener
 
      */
     private void InitGame() {
-        wnd = new GameWindow("Knightly Order", 1500, 1250);
+        wnd = new GameWindow("Knightly Order", GameWindow.getWidth(), GameWindow.getHeight());
         /// Este construita fereastra grafica.
         wnd.BuildGameWindow();
         /// Se incarca toate elementele grafice (dale)
         Assets.Init();
         player = new Player();
-
+        MainMenu menu = new MainMenu(this,g);
         wnd.GetCanvas().addKeyListener(this);
-        wnd.GetCanvas().addMouseListener(new MainMenu(this,g));
+        wnd.GetCanvas().addMouseListener(menu);
+        wnd.GetCanvas().addMouseMotionListener(menu);
         wnd.GetCanvas().addMouseListener(new FightScene(this));
 
         MainMenu.initialize();
@@ -129,7 +132,7 @@ public class Game implements Runnable,KeyListener
 
         int worldWidth = mapWidth * 65;
         int worldHeight = mapHeight * 67;
-        camera = new Camera(1500, 1200, worldWidth, worldHeight);
+        camera = new Camera(GameWindow.getWidth(), GameWindow.getHeight(), worldWidth, worldHeight);
     }
     /*! \fn public void run()
         \brief Functia ce va rula in thread-ul creat.
@@ -163,6 +166,7 @@ public class Game implements Runnable,KeyListener
                     /// Deseneaza elementele grafica in fereastra.
                     oldTime = curentTime;
                 }
+
                 Draw();
             }
             //Pentru cand jucatorul pierde

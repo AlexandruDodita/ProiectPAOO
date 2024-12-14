@@ -3,29 +3,40 @@ package PaooGame.Graphics;
 import PaooGame.Entity.Entity;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
+import PaooGame.GameWindow.GameWindow;
 import PaooGame.Save;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 
 
-public class MainMenu implements MouseListener {
+public class MainMenu implements MouseListener, MouseMotionListener {
     private static Game game;
     public final static int centerX=21;
     public final static int centerY=36;
+    private static int width, height;
+
     public MainMenu(Game game, Graphics g) {
         this.game = game;
+        width=GameWindow.WIDTH;
+        height=GameWindow.HEIGHT;
     }
+
     private static MenuScreen mainMenu;
     private static MenuScreen levelSelection;
+
+
+
     private static class MenuOption{
         String label;
         Rectangle bounds;
         Runnable action;
+        boolean hovered;
 
         MenuOption(String label, int x, int y, int width, int height, Runnable action){
             this.label = label;
@@ -35,16 +46,36 @@ public class MainMenu implements MouseListener {
 
         void render(Graphics g, Font font) {
             g.setFont(font);
-            g.drawString(label,bounds.x+centerX,bounds.y+centerY);
-            ((Graphics2D)g).draw(bounds);
+            FontMetrics fm = g.getFontMetrics(font);
+
+            int textWidth = fm.stringWidth(label);
+            int textHeight = fm.getAscent()/2 - fm.getDescent()*5;
+
+            int textX = bounds.x + (bounds.width - textWidth) / 2;
+            int textY = bounds.y + (bounds.height - textHeight) / 2;
+            g.drawString(label,textX,textY);
+            //((Graphics2D)g).draw(bounds); //no longer needed, shows the boundaries for each clickable part
+
+            if(hovered){
+                g.setColor(new Color(255,255,255,128));
+                g.fillRect(bounds.x,bounds.y,bounds.width,bounds.height);
+            }
+            g.setColor(Color.BLACK);
+            g.drawString(label,textX,textY);
         }
+
         boolean isClicked(int mx, int my){
             return bounds.contains(mx,my);
         }
+
         void performAction(){
             if(action!=null){
                 action.run();
             }
+        }
+
+        void setHovered(boolean hovered){
+            this.hovered=hovered;
         }
     }
 
@@ -61,11 +92,25 @@ public class MainMenu implements MouseListener {
         }
 
         void render(Graphics g){
+            // Render title
             g.setFont(new Font("arial", Font.BOLD, 50));
-            g.drawString(title, 1200 / 2, 100);
+            FontMetrics titleMetrics = g.getFontMetrics();
+            int titleWidth = titleMetrics.stringWidth(title);
+            g.drawString(title, (width - titleWidth) / 2, 100);
 
+            // Render options
             Font optionFont = new Font("arial", Font.BOLD, 30);
-            for(MenuOption option : options){
+            int optionYStart = height / 2 - options.size() * 60 / 2; // Space evenly around the center
+
+            for (int i = 0; i < options.size(); i++) {
+                MenuOption option = options.get(i);
+                int optionWidth = 125; // Arbitrary button width
+                int optionHeight = 50; // Arbitrary button height
+                int optionX = (width - optionWidth) / 2; // Center horizontally
+                int optionY = optionYStart + i * 70; // Add spacing between options
+
+                // Update the bounds to reflect the new dynamic positioning
+                option.bounds = new Rectangle(optionX, optionY, optionWidth, optionHeight);
                 option.render(g, optionFont);
             }
         }
@@ -78,28 +123,34 @@ public class MainMenu implements MouseListener {
                 }
             }
         }
+
+        void handleHover(int mx, int my) {
+            for (MenuOption option : options) {
+                option.setHovered(option.bounds.contains(mx, my));
+            }
+        }
     }
 
-    public static void initialize(){
+    public static void initialize(){ //initialises both mainMenu and levelSelection screens with their respective options
         mainMenu = new MenuScreen("Knightly Order");
 
-        mainMenu.addOption(new MenuOption("Play", 1200 / 2 + 120, 150, 100, 50, () -> Game.state = Game.GAME_STATE.LEVEL_SELECTION));
-        mainMenu.addOption(new MenuOption("Help", 1200 / 2 + 120, 250, 100, 50, () -> System.out.println("Help was not yet implemented")));
-        mainMenu.addOption(new MenuOption("Exit", 1200 / 2 + 120, 350, 100, 50, game::StopGame));
+        mainMenu.addOption(new MenuOption("Play", width / 2 - width/20, 100, 100, 50, () -> Game.state = Game.GAME_STATE.LEVEL_SELECTION));
+        mainMenu.addOption(new MenuOption("Help", width / 2 - width/20, 200, 100, 50, () -> System.out.println("Help was not yet implemented")));
+        mainMenu.addOption(new MenuOption("Exit", width / 2 - width/20, 300, 100, 50, game::StopGame));
 
         levelSelection = new MenuScreen("Level Selection");
-        levelSelection.addOption(new MenuOption("Level 1", 1200 / 2 + 90, 150, 125, 50, () -> loadLevel(Game.GAME_STATE.LEVEL_ONE)));
-        levelSelection.addOption(new MenuOption("Level 2", 1200 / 2 + 90, 250, 125, 50, () -> {
+        levelSelection.addOption(new MenuOption("Level 1", width / 2- width/20, 150, 125, 50, () -> loadLevel(Game.GAME_STATE.LEVEL_ONE)));
+        levelSelection.addOption(new MenuOption("Level 2", width / 2 - width/20, 250, 125, 50, () -> {
             if (Save.converterData() >= 2) loadLevel(Game.GAME_STATE.LEVEL_TWO);
             else System.out.println("LEVEL LOCKED. COMPLETE PREVIOUS LEVEL FIRST!");
         }));
-        levelSelection.addOption(new MenuOption("Level 3", 1200 / 2 + 90, 350, 125, 50, () -> {
+        levelSelection.addOption(new MenuOption("Level 3", width / 2 + width/10, 350, 125, 50, () -> {
             if (Save.converterData() >= 3) loadLevel(Game.GAME_STATE.LEVEL_THREE);
             else System.out.println("LEVEL LOCKED. COMPLETE PREVIOUS LEVEL FIRST!");
         }));
     }
 
-    private static void loadLevel(Game.GAME_STATE level){
+    private static void loadLevel(Game.GAME_STATE level){ //loads the level as needed
         Game.state = level;
         Game.currentLevel = level;
         Game.setPlayerCoords(40,900);
@@ -144,16 +195,34 @@ public class MainMenu implements MouseListener {
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        // This method can be left empty if not used
+
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        // This method can be left empty if not used
+
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        // This method can be left empty if not used
+
+    }
+
+    //mouseMotionListener methods
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        int mx = e.getX();
+        int my = e.getY();
+
+        if (Game.state == Game.GAME_STATE.MENU) {
+            mainMenu.handleHover(mx, my);
+        } else if (Game.state == Game.GAME_STATE.LEVEL_SELECTION) {
+            levelSelection.handleHover(mx, my);
+        }
     }
 }
