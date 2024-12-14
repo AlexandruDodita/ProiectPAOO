@@ -39,8 +39,10 @@ public class Camera {
     }
 
     public void centerOnEntity(Player e) {
-        setX(e.getX() - screenWidth / 2 + 133 / 2);
-        setY(e.getY() - screenHeight / 2 + 71 / 2);
+        float targetX = e.getX() - (screenWidth - e.getTextureWidth()) / 2.0f;
+        float targetY = e.getY() - (screenHeight - e.getTextureHeight()) / 2.0f;
+        setX(targetX);
+        setY(targetY);
     }
     public void backToZero(){
         setX(0);

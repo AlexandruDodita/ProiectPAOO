@@ -120,6 +120,7 @@ public class Game implements Runnable,KeyListener, MouseListener
         wnd.BuildGameWindow();
         /// Se incarca toate elementele grafice (dale)
         Assets.Init();
+
         player = new Player();
         MainMenu menu = new MainMenu(this,g);
         wnd.GetCanvas().addKeyListener(this);
@@ -355,8 +356,13 @@ public class Game implements Runnable,KeyListener, MouseListener
         /// operatie de desenare
         // ...............
         //Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
-        g.translate((int)-camera.getX(), (int)-camera.getY());
+        //g.translate((int)-camera.getX(), (int)-camera.getY());
         if(state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE) {
+
+            camera.centerOnEntity(player);
+
+            // Apply camera translation
+            g.translate((int) -camera.getX(), (int) -camera.getY());
             MapBuilder.mapBuilder();
             MapBuilder.draw(g);
             player.render(g);

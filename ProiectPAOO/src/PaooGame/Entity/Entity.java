@@ -55,6 +55,7 @@ public class Entity {
 
     public void render(Graphics g){
         for(int i=0;i<4;i++){
+           // System.out.println("ERROR is here??");
             g.drawImage(idleFrames[currentFrame],x,y,null);
         }
         /*g.setColor(Color.GREEN);

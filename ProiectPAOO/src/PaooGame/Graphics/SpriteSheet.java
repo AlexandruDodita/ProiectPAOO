@@ -13,9 +13,6 @@ public class SpriteSheet
     private BufferedImage       spriteSheet;              /*!< Referinta catre obiectul BufferedImage ce contine sprite sheet-ul.*/
     private static final int    tileWidth   = 65;   /*!< Latimea unei dale din sprite sheet.*/
     private static final int    tileHeight  = 67;   /*!< Inaltime unei dale din sprite sheet.*/
-    private static final int frameWidth = 133;
-
-    private static final int frameHeight = 71;
 
     /*! \fn public SpriteSheet(BufferedImage sheet)
         \brief Constructor, initializeaza spriteSheet.

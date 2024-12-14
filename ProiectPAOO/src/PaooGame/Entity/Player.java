@@ -20,13 +20,15 @@ public class Player {
     private BufferedImage[] idleFrames;
     private BufferedImage[] moveLeftFrames;
     private BufferedImage[] moveRightFrames;
-    private final int nrIdleFrames = 6;
-    private int nrMoveRightFrames = 6;
-    private int nrMoveLeftFrames = 6;
+    private BufferedImage[] moveUpFrames;
+    private BufferedImage[] moveDownFrames;
+
+    private final int nrIdleFrames = 1;
+    private int nrRunFrames = 8;
     private static int Health=100;
-    private static final int frameWidth = 133;
-    private static final int CollisionWidth=70; //pentru a rezolva problema cu aparenta coliziunii
-    private static final int frameHeight = 71;
+    private static final int frameWidth = 64;
+    private static final int CollisionWidth=30; //pentru a rezolva problema cu aparenta coliziunii
+    private static final int frameHeight = 64;
     private static int CameraX=0,CameraY=0;
     private int holdX,holdY;
     private int currentFrame;
@@ -50,18 +52,26 @@ public class Player {
 
     public Player() {
 
-        idleFrames = new BufferedImage[6];
-        moveLeftFrames = new BufferedImage[6];
-        moveRightFrames = new BufferedImage[6];
+        idleFrames = new BufferedImage[nrIdleFrames];
+        moveLeftFrames = new BufferedImage[nrRunFrames];
+        moveRightFrames = new BufferedImage[nrRunFrames];
+        moveUpFrames = new BufferedImage[nrRunFrames];
+        moveDownFrames = new BufferedImage[nrRunFrames];
 
         for (int i = 0; i < nrIdleFrames; i++) {
             idleFrames[i] = playerIdle.cropMainChar(i, 0, frameWidth, frameHeight);
         }
-        for (int i = 0; i < nrMoveLeftFrames; i++) {
-            moveLeftFrames[i] = playerRunLeft.cropMainChar(i, 0, frameWidth, frameHeight);
+        for(int i = 0; i<nrRunFrames; i++){
+            moveUpFrames[i] = playerRun.cropMainChar(i, 0, frameWidth, frameHeight);
         }
-        for (int i = 0; i < nrMoveRightFrames; i++) {
-            moveRightFrames[i] = playerRunRight.cropMainChar(i, 0, frameWidth, frameHeight);
+        for (int i = 0; i < nrRunFrames; i++) {
+            moveLeftFrames[i] = playerRun.cropMainChar(i, 1, frameWidth, frameHeight);
+        }
+        for(int i=0;i<nrRunFrames;i++){
+            moveDownFrames[i] = playerRun.cropMainChar(i, 2, frameWidth, frameHeight);
+        }
+        for (int i = 0; i < nrRunFrames; i++) {
+            moveRightFrames[i] = playerRun.cropMainChar(i, 3, frameWidth, frameHeight);
         }
 
 
@@ -91,25 +101,19 @@ public class Player {
             }
         }
         // actualizare run
-        else if (isMovingRight) {
+        else if (isMovingRight || isMovingUp || isMovingDown || isMovingLeft) {
             frameDelayCounter++;
             if (frameDelayCounter >= frameDelay) {
                 frameDelayCounter = 0;
-                currentFrame = (currentFrame + 1) % nrMoveRightFrames;
+                currentFrame = (currentFrame + 1) % nrRunFrames;
             }
-        }else if (isMovingLeft) {
-            frameDelayCounter++;
-            if (frameDelayCounter >= frameDelay) {
-                frameDelayCounter = 0;
-                currentFrame = (currentFrame + 1) % nrMoveLeftFrames;
+            if(checkXCollision(MapBuilder.map)){
+                CollisionOn=true;
+                this.stopRunning();
             }
         }
 
 
-        if ((isMovingLeft || isMovingRight || isMovingDown || isMovingUp) && checkXCollision(MapBuilder.map)) {
-            CollisionOn=true;
-            this.stopRunning();
-        }
     }
 
 
@@ -121,12 +125,16 @@ public class Player {
             g.drawImage(idleFrames[currentFrame], x, y, null);
         } else if (isMovingLeft && currentFrame >= 0 && currentFrame < moveLeftFrames.length) {
             g.drawImage(moveLeftFrames[currentFrame], x, y, null);
-        } else if ((isMovingRight||isMovingUp||isMovingDown) && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
+        } else if ((isMovingRight) && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
             g.drawImage(moveRightFrames[currentFrame], x, y, null);
+        } else if(isMovingUp && currentFrame >= 0 && currentFrame < moveUpFrames.length) {
+            g.drawImage(moveUpFrames[currentFrame], x, y, null);
+        } else if(isMovingDown && currentFrame >= 0 && currentFrame < moveDownFrames.length) {
+            g.drawImage(moveDownFrames[currentFrame], x, y, null);
         }
-        /*g.setColor(Color.GREEN);
-        g.drawRect(x+20, y, CollisionWidth, frameHeight); //Folosit pentru a vedea hitbox-ul player-ului. Trebuie folosit in paralel cu echivalentul din MapBuilder
-         */
+       // g.setColor(Color.GREEN);
+       // g.drawRect(x+20, y, CollisionWidth, frameHeight); //Folosit pentru a vedea hitbox-ul player-ului. Trebuie folosit in paralel cu echivalentul din MapBuilder
+
     }
 
     private boolean isOnTileAxis() { //nefolosit inca
@@ -145,7 +153,7 @@ public class Player {
 
         Rectangle enemyBounds = null;
         if (enemy != null) {
-            enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), 128, 128);
+            enemyBounds = new Rectangle(enemy.getX(), enemy.getY(), 256, 256); //bigger collision width for the enemy to simulate reach for the attack
         }
 
         Rectangle friendlyBounds = null;
@@ -323,6 +331,13 @@ public class Player {
 //        invis.setX(x);
 //        invis.setY(y);
 
+    }
+
+    public int getTextureWidth(){
+        return frameWidth;
+    }
+    public int getTextureHeight(){
+        return frameHeight;
     }
 
     public static void setEnemy(Entity e){

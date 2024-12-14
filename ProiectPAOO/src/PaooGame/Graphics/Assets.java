@@ -15,7 +15,7 @@ public class Assets
     public static BufferedImage background;
     public static BufferedImage battleBackground;
     public static SpriteSheet playerIdle;
-    public static SpriteSheet playerRunLeft;
+    public static SpriteSheet playerRun;
     public static SpriteSheet playerRunRight;
     public static SpriteSheet EnemyIdle;
     public static BufferedImage wallOne;
@@ -40,9 +40,9 @@ public class Assets
     {
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
       //  SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/PaooGameSpriteSheet.png"));
-        playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/playerIdle.png"));
-        playerRunLeft=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/playerRunLeft.png"));
-        playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/playerRunRight.png"));
+        playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/charVersionOne/idle.png"));
+        playerRun=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/charVersionOne/walk.png"));
+      //  playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/playerRunRight.png"));
         EnemyIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/otherAnim/Idle.png"));
         //SpriteSheet props=new SpriteSheet(ImageLoader.LoadImage("/textures/Props.png"));
         SpriteSheet floor=new SpriteSheet(ImageLoader.LoadImage("/textures/tiles/floorTiles.png"));
