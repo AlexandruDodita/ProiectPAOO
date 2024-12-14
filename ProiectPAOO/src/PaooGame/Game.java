@@ -122,6 +122,8 @@ public class Game implements Runnable,KeyListener
         wnd.GetCanvas().addKeyListener(this);
         wnd.GetCanvas().addMouseListener(new MainMenu(this,g));
         wnd.GetCanvas().addMouseListener(new FightScene(this));
+
+        MainMenu.initialize();
         save= new Save();
         save.database();
 

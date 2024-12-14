@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataSource name="database.db">
-  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.51">
+  <database-model serializer="dbm" dbms="SQLITE" family-id="SQLITE" format-version="4.53">
     <root id="1">
       <ServerVersion>3.45.1</ServerVersion>
     </root>
@@ -1595,36 +1595,36 @@
       <System>1</System>
     </table>
     <column id="557" parent="555" name="unlockedLevel1">
-      <DasType>INTEGER|0s</DasType>
       <Position>1</Position>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
     <column id="558" parent="555" name="unlockedLevel2">
-      <DasType>INTEGER|0s</DasType>
       <Position>2</Position>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
     <column id="559" parent="555" name="unlockedLevel3">
-      <DasType>INTEGER|0s</DasType>
       <Position>3</Position>
+      <StoredType>INTEGER|0s</StoredType>
     </column>
     <column id="560" parent="556" name="type">
-      <DasType>TEXT|0s</DasType>
       <Position>1</Position>
+      <StoredType>TEXT|0s</StoredType>
     </column>
     <column id="561" parent="556" name="name">
-      <DasType>TEXT|0s</DasType>
       <Position>2</Position>
+      <StoredType>TEXT|0s</StoredType>
     </column>
     <column id="562" parent="556" name="tbl_name">
-      <DasType>TEXT|0s</DasType>
       <Position>3</Position>
+      <StoredType>TEXT|0s</StoredType>
     </column>
     <column id="563" parent="556" name="rootpage">
-      <DasType>INT|0s</DasType>
       <Position>4</Position>
+      <StoredType>INT|0s</StoredType>
     </column>
     <column id="564" parent="556" name="sql">
-      <DasType>TEXT|0s</DasType>
       <Position>5</Position>
+      <StoredType>TEXT|0s</StoredType>
     </column>
   </database-model>
 </dataSource>
