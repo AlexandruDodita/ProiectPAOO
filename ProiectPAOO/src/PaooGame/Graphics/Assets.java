@@ -17,7 +17,7 @@ public class Assets
     public static BufferedImage battleBackground;
     public static SpriteSheet playerIdle;
     public static SpriteSheet playerRun;
-    public static SpriteSheet playerRunRight;
+    public static SpriteSheet playerAttackSword;
     public static SpriteSheet EnemyIdle;
     public static BufferedImage wallOne;
     public static BufferedImage gate1;
@@ -37,15 +37,13 @@ public class Assets
         Aceasta functie poate fi rescrisa astfel incat elementele grafice incarcate/utilizate
         sa fie parametrizate. Din acest motiv referintele nu sunt finale.
      */
-    public static void Init()
-    {
-
+    public static void buildCharacter(int width, int height, String characterPath, String weaponPath, String productName){
         try {
-            DynamicAssetBuilder builder = new DynamicAssetBuilder(64, 256);
-            builder.addLayer("/textures/EntitySpritesheets/playerAnim/charVersionOne/idle.png");
-            builder.addLayer("/textures/EntitySpritesheets/playerAnim/idleLongswordDefault.png");
+            DynamicAssetBuilder builder = new DynamicAssetBuilder(width, height);
+            builder.addLayer(characterPath);
+            builder.addLayer(weaponPath);
 
-            builder.buildAsset("/textures/EntitySpritesheets/playerAnim/", "result.png"); //the path where it goes to is irrelevant,
+            builder.buildAsset("/textures/EntitySpritesheets/playerAnim/", productName); //the path where it goes to is irrelevant,
             //as it is saved in the bytecode area of the project and thus visibile to the compiler when trying to access it above.
 
             System.out.println("Character image build successfully!");
@@ -54,10 +52,17 @@ public class Assets
         }catch(IllegalArgumentException e){
             System.err.println("Invalid layer dimensions: " + e.getMessage());
         }
+    }
+    public static void Init()
+    {
+        buildCharacter(64,256,"/textures/EntitySpritesheets/playerAnim/charVersionOne/idle.png","/textures/EntitySpritesheets/playerAnim/weapons/idleLongswordDefault.png", "idleDefault.png");
+        buildCharacter(512,256, "/textures/EntitySpritesheets/playerAnim/charVersionOne/walk.png","/textures/EntitySpritesheets/playerAnim/weapons/walkLongswordDefault.png", "walkDefault.png");
+
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
       //  SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/PaooGameSpriteSheet.png"));
-        playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/result.png"));
-        playerRun=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/charVersionOne/walk.png"));
+        playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/idleDefault.png"));
+        playerRun=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/walkDefault.png"));
+        playerAttackSword=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/charVersionOne/slash.png"));
       //  playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/playerRunRight.png"));
         EnemyIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/otherAnim/Idle.png"));
         //SpriteSheet props=new SpriteSheet(ImageLoader.LoadImage("/textures/Props.png"));

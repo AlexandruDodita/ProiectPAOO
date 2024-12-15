@@ -18,14 +18,14 @@ public class Player {
     private int x, y;
     private final int speed = 7;
     private BufferedImage[][] idleFrames;
-    private BufferedImage[] moveLeftFrames;
-    private BufferedImage[] moveRightFrames;
-    private BufferedImage[] moveUpFrames;
-    private BufferedImage[] moveDownFrames;
+    //new method for cleaner code
+    private BufferedImage[][] moveFrames;
+    private BufferedImage[][] attackFrames;
 
     private final int nrIdleFrames = 1;
     private final int directions = 4;
-    private int nrRunFrames = 8;
+    private final int nrRunFrames = 8;
+    private final int nrAttackFrames = 6;
     private static int Health=100;
     private static final int frameWidth = 64;
     private static final int CollisionWidth=30; //pentru a rezolva problema cu aparenta coliziunii
@@ -34,17 +34,19 @@ public class Player {
     private int holdX,holdY;
     private int currentFrame;
 
+    private static final int frameAttackWidth=192;
+    private static final int frameAttackHeight=192;
+
     private int frameDelay;
 
     private int frameDelayCounter;
 
     private boolean isIdle;
-    private int groundLevel;
     private boolean isMovingLeft;
     private boolean isMovingRight;
     private boolean isMovingUp;
     private boolean isMovingDown;
-    private boolean discovered=false;
+    private static boolean isAttacking;
     public boolean CollisionOn;
     private static int lastDirection=3; //0 - up, 1 - left, 2 - down, 3 - right
     private Entity friendly;
@@ -54,37 +56,26 @@ public class Player {
 
     public Player() {
 
-        idleFrames = new BufferedImage[4][1];
+        idleFrames = new BufferedImage[directions][nrIdleFrames];
+        moveFrames = new BufferedImage[directions][nrRunFrames];
+        attackFrames = new BufferedImage[directions][nrAttackFrames];
+
         for(int i=0;i<directions;i++) {
             idleFrames[i]= new BufferedImage[nrIdleFrames];
+            moveFrames[i] = new BufferedImage[nrRunFrames];
+            attackFrames[i] = new BufferedImage[nrAttackFrames];
         }
-        moveLeftFrames = new BufferedImage[nrRunFrames];
-        moveRightFrames = new BufferedImage[nrRunFrames];
-        moveUpFrames = new BufferedImage[nrRunFrames];
-        moveDownFrames = new BufferedImage[nrRunFrames];
-
-
-
         for(int j=0;j<directions;j++) {
             for (int i = 0; i < nrIdleFrames; i++) {
-
                 idleFrames[j][i] = playerIdle.cropMainChar(i, j, frameWidth, frameHeight);
             }
+            for(int i = 0; i < nrRunFrames; i++) {
+                moveFrames[j][i]=playerRun.cropMainChar(i, j, frameWidth, frameHeight);
+            }
+            for(int i=0;i< nrAttackFrames;i++){
+                attackFrames[j][i]=playerAttackSword.cropMainChar(i, j, frameAttackWidth, frameAttackHeight);
+            }
         }
-
-        for(int i = 0; i<nrRunFrames; i++){
-            moveUpFrames[i] = playerRun.cropMainChar(i, 0, frameWidth, frameHeight);
-        }
-        for (int i = 0; i < nrRunFrames; i++) {
-            moveLeftFrames[i] = playerRun.cropMainChar(i, 1, frameWidth, frameHeight);
-        }
-        for(int i=0;i<nrRunFrames;i++){
-            moveDownFrames[i] = playerRun.cropMainChar(i, 2, frameWidth, frameHeight);
-        }
-        for (int i = 0; i < nrRunFrames; i++) {
-            moveRightFrames[i] = playerRun.cropMainChar(i, 3, frameWidth, frameHeight);
-        }
-
 
         currentFrame = 0; //frame-urile incep de la 0
         frameDelay = 5;     //cu un delay de 5 frame-uri
@@ -93,9 +84,12 @@ public class Player {
         isIdle = true;
         isMovingLeft = false;
         isMovingRight = false;
+        isMovingUp = false;
+        isMovingDown = false;
+        isAttacking = false;
 
 
-        x = 40;
+        x = 80;
         y = 900;
 
     }
@@ -104,7 +98,7 @@ public class Player {
 
         //portiune cod actualizarea animatiei
         //actualizare idle
-        if (isIdle) {
+        if (isIdle && !isAttacking) {
             frameDelayCounter++;
             if (frameDelayCounter >= frameDelay) {
                 frameDelayCounter = 0;
@@ -112,11 +106,28 @@ public class Player {
             }
         }
         // actualizare run
-        else if (isMovingRight || isMovingUp || isMovingDown || isMovingLeft) {
+        else if ((isMovingRight || isMovingUp || isMovingDown || isMovingLeft) && !isAttacking) {
             frameDelayCounter++;
             if (frameDelayCounter >= frameDelay) {
                 frameDelayCounter = 0;
                 currentFrame = (currentFrame + 1) % nrRunFrames;
+            }
+            if(checkXCollision(MapBuilder.map)){
+                CollisionOn=true;
+                this.stopRunning();
+            }
+        }else if(isAttacking){
+            frameDelayCounter++;
+            if (frameDelayCounter >= frameDelay && currentFrame<nrAttackFrames-1) {
+                frameDelayCounter = 0;
+              //  System.out.println(currentFrame);
+                currentFrame++;
+
+            }else if(currentFrame==nrAttackFrames-1){
+                isAttacking=false;
+                //System.out.println("Final frame" + currentFrame);
+                currentFrame=0;
+
             }
             if(checkXCollision(MapBuilder.map)){
                 CollisionOn=true;
@@ -132,16 +143,12 @@ public class Player {
         // System.out.println("Render - currentFrame: " + currentFrame); //debug pentru ca frame-urile totale depaseau frame-urile de pe ecran
         // Desenare player pe ecran
         // verificare ca frame-ul curent sa nu treaca out of bounds
-        if (isIdle && currentFrame >= 0 && currentFrame < idleFrames[lastDirection].length) {
+        if (!isAttacking && (isIdle && currentFrame >= 0 && currentFrame < idleFrames[lastDirection].length)) {
             g.drawImage(idleFrames[lastDirection][currentFrame], x, y, null);
-        } else if (isMovingLeft && currentFrame >= 0 && currentFrame < moveLeftFrames.length) {
-            g.drawImage(moveLeftFrames[currentFrame], x, y, null);
-        } else if ((isMovingRight) && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
-            g.drawImage(moveRightFrames[currentFrame], x, y, null);
-        } else if(isMovingUp && currentFrame >= 0 && currentFrame < moveUpFrames.length) {
-            g.drawImage(moveUpFrames[currentFrame], x, y, null);
-        } else if(isMovingDown && currentFrame >= 0 && currentFrame < moveDownFrames.length) {
-            g.drawImage(moveDownFrames[currentFrame], x, y, null);
+        } else if (!isAttacking && ((isMovingUp || isMovingDown || isMovingLeft || isMovingRight) && currentFrame >= 0 && currentFrame < moveFrames[lastDirection].length)) {
+            g.drawImage(moveFrames[lastDirection][currentFrame], x, y, null);
+        }else if(isAttacking && currentFrame>=0 && currentFrame<attackFrames[lastDirection].length){
+            g.drawImage(attackFrames[lastDirection][currentFrame], x-64, y-64, null);
         }
        // g.setColor(Color.GREEN);
        // g.drawRect(x+20, y, CollisionWidth, frameHeight); //Folosit pentru a vedea hitbox-ul player-ului. Trebuie folosit in paralel cu echivalentul din MapBuilder
@@ -182,7 +189,7 @@ public class Player {
                    // System.out.println("DEBUG: gate hitbox are: " + i * 65 + " " + j * 67);
                     holdX = i * 65;
                     holdY = j * 67;
-                    discovered = true;
+
                 }
 
                 if ((map[i][j] == null || map[i][j].getSolidState() == SolidState.NOT_SOLID) && (map[i][j] != g1 && map[i][j] != g2))
@@ -225,46 +232,24 @@ public class Player {
         if (friendlyBounds != null && playerBounds.intersects(friendlyBounds)) {
              double playerX = friendlyBounds.getX();
              double playerY = friendlyBounds.getY();
-
-            // Use SwingUtilities.invokeLater to ensure the drawing happens on the EDT
-//            SwingUtilities.invokeLater(() -> {
-//                //System.out.println("DEBUG: Calling drawMessage");
-//
-//            });
-            Game.drawMessage(playerX, playerY);
-
+             Game.drawMessage(playerX, playerY);
         }
         CollisionOn = false;
         return false;
     }
 
 
-
-    private BufferedImage getCurrentAnimationFrame()
-    {
-        if (isMovingRight && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
-            return moveRightFrames[currentFrame];
-        } else if (isMovingLeft && currentFrame >= 0 && currentFrame < moveLeftFrames.length) {
-            return moveLeftFrames[currentFrame];
-        } else if (isIdle && currentFrame >= 0 && currentFrame < idleFrames.length) {
-            return moveUpFrames[currentFrame];
-            //return idleFrames[currentFrame]; //tofix if this function somehow gets used
-        } else {
-            // tratare eroare eventuala
-            return null;
-        }
-
-    }
-
     //miscari stanga, dreapta, trebuie revizuit
     public void moveLeft(Graphics g)
     {
+        lastDirection = 1;
         x = x - speed;
         isIdle = false;
         isMovingLeft = true;
         isMovingRight=false;
         isMovingUp=false;
         isMovingDown=false;
+
         CameraX-=5;
         //Camera.setX(CameraX);
 //        if(g!=null)
@@ -273,6 +258,8 @@ public class Player {
 
     public void moveRight(Graphics g)
     {
+        lastDirection = 3;
+
         x = x + speed;
         isIdle = false;
         isMovingLeft=false;
@@ -285,6 +272,8 @@ public class Player {
 //            Camera.moveCamera(g);
     }
     public void moveUp(Graphics g){
+        lastDirection = 0;
+
         y=y-speed;
         isIdle=false;
         isMovingRight=false;
@@ -297,6 +286,9 @@ public class Player {
 //            Camera.moveCamera(g);
     }
     public void moveDown(Graphics g){
+
+        lastDirection = 2;
+
         y=y+speed;
         isIdle=false;
         isMovingLeft=false;
@@ -308,6 +300,7 @@ public class Player {
 //        if(g!=null)
 //            Camera.moveCamera(g);
     }
+
     public void stopRunning()
     {
         if(isMovingUp){
@@ -362,6 +355,13 @@ public class Player {
         return frameHeight;
     }
 
+    public static void setAttackingState(boolean attacking){
+        isAttacking = attacking;
+    }
+    public static boolean getAttackingState(){
+        return isAttacking;
+    }
+
     public static void setEnemy(Entity e){
         enemy=e;
     }
@@ -370,5 +370,8 @@ public class Player {
     }
     public static boolean getEnemyCollision(){
         return enemyCollision;
+    }
+    public void setCurrentFrame(int newFrame){
+        currentFrame=newFrame;
     }
 }

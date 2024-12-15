@@ -12,6 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.concurrent.TimeUnit;
 
 import static PaooGame.Graphics.MapBuilder.*;
 
@@ -62,6 +63,9 @@ public class Game implements Runnable,KeyListener, MouseListener
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
     private static boolean drawMsg;
     public Save save;
+
+    private long lastAttackTime = 0;
+    private final int attackCooldown = 600;
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -463,8 +467,10 @@ public class Game implements Runnable,KeyListener, MouseListener
         int keyCode = e.getKeyCode();
         if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_S)
         {
+            player.setCurrentFrame(0);
             player.stopRunning();
         }
+
     }
 
         @Override
@@ -510,10 +516,18 @@ public class Game implements Runnable,KeyListener, MouseListener
     @Override
     public void mouseClicked(MouseEvent e) {
         if(state != GAME_STATE.MENU && state!=GAME_STATE.LEVEL_SELECTION) {
-            if(Player.getEnemyCollision()){
-                enemy1.setHealth(enemy1.getHealth()-10);
-                System.out.println("New health" + enemy1.getHealth());
+            if(!Player.getAttackingState()) {
+                Player.setAttackingState(true);
+
+
+                if(Player.getEnemyCollision()){
+
+                    enemy1.setHealth(enemy1.getHealth()-10);
+                    System.out.println("New health" + enemy1.getHealth());
+                }
             }
+
+
         }
     }
 
