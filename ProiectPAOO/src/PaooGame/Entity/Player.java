@@ -16,14 +16,15 @@ import PaooGame.Tiles.*;
 
 public class Player {
     private int x, y;
-    private int speed = 7;
-    private BufferedImage[] idleFrames;
+    private final int speed = 7;
+    private BufferedImage[][] idleFrames;
     private BufferedImage[] moveLeftFrames;
     private BufferedImage[] moveRightFrames;
     private BufferedImage[] moveUpFrames;
     private BufferedImage[] moveDownFrames;
 
     private final int nrIdleFrames = 1;
+    private final int directions = 4;
     private int nrRunFrames = 8;
     private static int Health=100;
     private static final int frameWidth = 64;
@@ -45,6 +46,7 @@ public class Player {
     private boolean isMovingDown;
     private boolean discovered=false;
     public boolean CollisionOn;
+    private static int lastDirection=3; //0 - up, 1 - left, 2 - down, 3 - right
     private Entity friendly;
     private static boolean enemyCollision;
     private static Entity enemy;
@@ -52,15 +54,24 @@ public class Player {
 
     public Player() {
 
-        idleFrames = new BufferedImage[nrIdleFrames];
+        idleFrames = new BufferedImage[4][1];
+        for(int i=0;i<directions;i++) {
+            idleFrames[i]= new BufferedImage[nrIdleFrames];
+        }
         moveLeftFrames = new BufferedImage[nrRunFrames];
         moveRightFrames = new BufferedImage[nrRunFrames];
         moveUpFrames = new BufferedImage[nrRunFrames];
         moveDownFrames = new BufferedImage[nrRunFrames];
 
-        for (int i = 0; i < nrIdleFrames; i++) {
-            idleFrames[i] = playerIdle.cropMainChar(i, 0, frameWidth, frameHeight);
+
+
+        for(int j=0;j<directions;j++) {
+            for (int i = 0; i < nrIdleFrames; i++) {
+
+                idleFrames[j][i] = playerIdle.cropMainChar(i, j, frameWidth, frameHeight);
+            }
         }
+
         for(int i = 0; i<nrRunFrames; i++){
             moveUpFrames[i] = playerRun.cropMainChar(i, 0, frameWidth, frameHeight);
         }
@@ -121,8 +132,8 @@ public class Player {
         // System.out.println("Render - currentFrame: " + currentFrame); //debug pentru ca frame-urile totale depaseau frame-urile de pe ecran
         // Desenare player pe ecran
         // verificare ca frame-ul curent sa nu treaca out of bounds
-        if (isIdle && currentFrame >= 0 && currentFrame < idleFrames.length) {
-            g.drawImage(idleFrames[currentFrame], x, y, null);
+        if (isIdle && currentFrame >= 0 && currentFrame < idleFrames[lastDirection].length) {
+            g.drawImage(idleFrames[lastDirection][currentFrame], x, y, null);
         } else if (isMovingLeft && currentFrame >= 0 && currentFrame < moveLeftFrames.length) {
             g.drawImage(moveLeftFrames[currentFrame], x, y, null);
         } else if ((isMovingRight) && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
@@ -187,6 +198,7 @@ public class Player {
                     if (isMovingLeft) {
                         stopRunning();
                         moveRight(null);
+                        isIdle=true;
                         return true;
                     } else if (isMovingRight) {
                         stopRunning();
@@ -228,14 +240,15 @@ public class Player {
 
 
 
-    private BufferedImage getCurrentAnimationFrame() //obine cadrul curent al animatiei, nefolosit
+    private BufferedImage getCurrentAnimationFrame()
     {
         if (isMovingRight && currentFrame >= 0 && currentFrame < moveRightFrames.length) {
             return moveRightFrames[currentFrame];
         } else if (isMovingLeft && currentFrame >= 0 && currentFrame < moveLeftFrames.length) {
             return moveLeftFrames[currentFrame];
         } else if (isIdle && currentFrame >= 0 && currentFrame < idleFrames.length) {
-            return idleFrames[currentFrame];
+            return moveUpFrames[currentFrame];
+            //return idleFrames[currentFrame]; //tofix if this function somehow gets used
         } else {
             // tratare eroare eventuala
             return null;
@@ -297,6 +310,15 @@ public class Player {
     }
     public void stopRunning()
     {
+        if(isMovingUp){
+            lastDirection=0;
+        }else if(isMovingDown){
+            lastDirection=2;
+        }else if(isMovingLeft){
+            lastDirection=1;
+        }else if(isMovingRight){
+            lastDirection=3;
+        }
         isMovingLeft = false;
         isMovingRight=false;
         isMovingUp=false;

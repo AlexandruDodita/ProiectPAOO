@@ -1,6 +1,7 @@
 package PaooGame.Graphics;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 /*! \class public class Assets
     \brief Clasa incarca fiecare element grafic necesar jocului.
@@ -38,9 +39,24 @@ public class Assets
      */
     public static void Init()
     {
+
+        try {
+            DynamicAssetBuilder builder = new DynamicAssetBuilder(64, 256);
+            builder.addLayer("/textures/EntitySpritesheets/playerAnim/charVersionOne/idle.png");
+            builder.addLayer("/textures/EntitySpritesheets/playerAnim/idleLongswordDefault.png");
+
+            builder.buildAsset("/textures/EntitySpritesheets/playerAnim/", "result.png"); //the path where it goes to is irrelevant,
+            //as it is saved in the bytecode area of the project and thus visibile to the compiler when trying to access it above.
+
+            System.out.println("Character image build successfully!");
+        }catch (IOException e){
+            System.err.println("Error loading/saving image: " + e.getMessage());
+        }catch(IllegalArgumentException e){
+            System.err.println("Invalid layer dimensions: " + e.getMessage());
+        }
             /// Se creaza temporar un obiect SpriteSheet initializat prin intermediul clasei ImageLoader
       //  SpriteSheet sheet = new SpriteSheet(ImageLoader.LoadImage("/textures/PaooGameSpriteSheet.png"));
-        playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/charVersionOne/idle.png"));
+        playerIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/result.png"));
         playerRun=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/charVersionOne/walk.png"));
       //  playerRunRight=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/playerAnim/playerRunRight.png"));
         EnemyIdle=new SpriteSheet(ImageLoader.LoadImage("/textures/EntitySpritesheets/otherAnim/Idle.png"));
@@ -61,5 +77,9 @@ public class Assets
         wallTwo= ImageLoader.LoadImage("/textures/tiles/decor/Building_B_01.png");
         decorA=ImageLoader.LoadImage("/textures/tiles/decor/Decor_Tile_A_05.png");
         decorB=ImageLoader.LoadImage("/textures/tiles/decor/Decor_Tile_B_05.png");
+
+
+        //used for testing the new dynamic character/asset builder
+
     }
 }

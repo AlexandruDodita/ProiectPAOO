@@ -4,6 +4,8 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import static java.lang.System.exit;
 
@@ -35,5 +37,23 @@ public class ImageLoader
             e.printStackTrace();
         }
         return null;
-    }}
+    }
+    public static void SaveImagePNG(BufferedImage image, String path, String filename)
+    {
+
+        try
+        {
+            File file = new File( ImageLoader.class.getResource(path).getPath() + filename); //this gets where the resource path is at (aka in the out/production folder
+                                                                                                      //instead of the supposed res folder.
+            System.out.println("Saving file to: " + file.getAbsolutePath());
+            ImageIO.write(image, "png", file);
+        }
+        catch(IOException | NullPointerException e)
+        {
+            /// Afiseaza informatiile necesare depanarii.
+            e.printStackTrace();
+        }
+
+    }
+}
 
