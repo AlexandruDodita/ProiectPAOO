@@ -2,7 +2,7 @@ package PaooGame;
 
 import PaooGame.Entity.Entity;
 import PaooGame.Entity.Player;
-import PaooGame.GameWindow.GameWindow;
+import PaooGame.GameWindow.*;
 import PaooGame.Graphics.*;
 
 import javax.swing.*;
@@ -12,7 +12,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.concurrent.TimeUnit;
+import java.security.Key;
 
 import static PaooGame.Graphics.MapBuilder.*;
 
@@ -63,9 +63,10 @@ public class Game implements Runnable,KeyListener, MouseListener
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
     private static boolean drawMsg;
     public Save save;
-
     private long lastAttackTime = 0;
     private final int attackCooldown = 600;
+    private MainMenu menu;
+    private static boolean isCreatingChar=false;
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -84,7 +85,7 @@ public class Game implements Runnable,KeyListener, MouseListener
 
 
     public enum GAME_STATE{
-        MENU, LEVEL_SELECTION, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE, FIGHT_SCENE
+        MENU, LEVEL_SELECTION, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE, FIGHT_SCENE, CHAR_CREATION
     }
     public static GAME_STATE state=GAME_STATE.MENU;
     public static GAME_STATE currentLevel=GAME_STATE.MENU;
@@ -126,15 +127,13 @@ public class Game implements Runnable,KeyListener, MouseListener
         Assets.Init();
 
         player = new Player();
-        MainMenu menu = new MainMenu(this,g);
+        menu = new MainMenu(this,g);
         wnd.GetCanvas().addKeyListener(this);
         if(menu!=null) {
             wnd.GetCanvas().addMouseListener(menu);
             wnd.GetCanvas().addMouseMotionListener(menu);
         }
         wnd.GetCanvas().addMouseListener(this);
-
-        wnd.GetCanvas().addMouseListener(new FightScene(this));
 
         MainMenu.initialize();
         save= new Save();
@@ -390,6 +389,13 @@ public class Game implements Runnable,KeyListener, MouseListener
             MainMenu.render(g);
         }else if (state==GAME_STATE.FIGHT_SCENE){
             //FightScene.render(g); //old combat
+        }else if (state==GAME_STATE.CHAR_CREATION){
+            CharacterCreation creation = new CharacterCreation(new DynamicAssetBuilder(64,256));
+            if(!isCreatingChar) {
+                wnd.GetCanvas().addMouseListener(creation);
+                isCreatingChar = true;
+            }
+            creation.draw();
         }
         if(drawMsg){
             if (g != null) {
@@ -456,7 +462,11 @@ public class Game implements Runnable,KeyListener, MouseListener
             }else if(keyCode == KeyEvent.VK_R){
                 System.out.println("Progress resetted.");
                 Save.insertData(0,0,0,0,0);
-            } else{
+            }else if(keyCode == KeyEvent.VK_K){
+                state=GAME_STATE.CHAR_CREATION;
+                System.out.println("We tried entering CHAR_CREATION?");
+            }
+            else{
                 player.CollisionOn=false;
                 player.stopRunning();
             }
@@ -515,20 +525,20 @@ public class Game implements Runnable,KeyListener, MouseListener
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(state != GAME_STATE.MENU && state!=GAME_STATE.LEVEL_SELECTION) {
-            if(!Player.getAttackingState()) {
-                Player.setAttackingState(true);
-
-
-                if(Player.getEnemyCollision()){
-
-                    enemy1.setHealth(enemy1.getHealth()-10);
-                    System.out.println("New health" + enemy1.getHealth());
-                }
-            }
-
-
-        }
+//        if(state != GAME_STATE.MENU && state!=GAME_STATE.LEVEL_SELECTION) {
+//            if(!Player.getAttackingState()) {
+//                Player.setAttackingState(true);
+//
+//
+//                if(Player.getEnemyCollision()){
+//
+//                    enemy1.setHealth(enemy1.getHealth()-10);
+//                    System.out.println("New health" + enemy1.getHealth());
+//                }
+//            }
+//
+//
+//        }
     }
 
     @Override

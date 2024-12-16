@@ -1,9 +1,8 @@
-package PaooGame.Graphics;
+package PaooGame.GameWindow;
 
 import PaooGame.Entity.Entity;
 import PaooGame.Entity.Player;
 import PaooGame.Game;
-import PaooGame.GameWindow.GameWindow;
 import PaooGame.Save;
 
 import java.awt.*;
@@ -134,7 +133,7 @@ public class MainMenu implements MouseListener, MouseMotionListener {
     public static void initialize(){ //initialises both mainMenu and levelSelection screens with their respective options
         mainMenu = new MenuScreen("Knightly Order");
 
-        mainMenu.addOption(new MenuOption("Play", width / 2 - width/20, 100, 100, 50, () -> Game.state = Game.GAME_STATE.LEVEL_SELECTION));
+        mainMenu.addOption(new MenuOption("Play", width / 2 - width/20, 100, 100, 50, () -> Game.state = Game.GAME_STATE.CHAR_CREATION));
         mainMenu.addOption(new MenuOption("Help", width / 2 - width/20, 200, 100, 50, () -> System.out.println("Help was not yet implemented")));
         mainMenu.addOption(new MenuOption("Exit", width / 2 - width/20, 300, 100, 50, game::StopGame));
 

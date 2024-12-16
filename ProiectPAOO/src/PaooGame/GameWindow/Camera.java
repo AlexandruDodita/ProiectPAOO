@@ -1,8 +1,6 @@
-package PaooGame.Graphics;
+package PaooGame.GameWindow;
 
 import PaooGame.Entity.Player;
-
-import java.awt.*;
 
 public class Camera {
     private float x, y;

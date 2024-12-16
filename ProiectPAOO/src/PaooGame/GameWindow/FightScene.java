@@ -1,8 +1,9 @@
-package PaooGame.Graphics;
+package PaooGame.GameWindow;
 
 import PaooGame.Entity.Entity;
 import PaooGame.Game;
 import PaooGame.Entity.Player;
+import PaooGame.Graphics.Assets;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
