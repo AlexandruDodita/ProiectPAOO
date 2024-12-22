@@ -132,7 +132,7 @@ public class MainMenu implements MouseListener, MouseMotionListener {
 
     public static void initialize(){ //initialises both mainMenu and levelSelection screens with their respective options
         mainMenu = new MenuScreen("Knightly Order");
-
+                    //Play is currently set to CHAR_CREATION state for easier testing. To be modified back to LEVEL_SELECTION
         mainMenu.addOption(new MenuOption("Play", width / 2 - width/20, 100, 100, 50, () -> Game.state = Game.GAME_STATE.CHAR_CREATION));
         mainMenu.addOption(new MenuOption("Help", width / 2 - width/20, 200, 100, 50, () -> System.out.println("Help was not yet implemented")));
         mainMenu.addOption(new MenuOption("Exit", width / 2 - width/20, 300, 100, 50, game::StopGame));

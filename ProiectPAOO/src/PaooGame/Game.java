@@ -52,7 +52,7 @@ import static PaooGame.Graphics.MapBuilder.*;
  */
 public class Game implements Runnable,KeyListener, MouseListener
 {
-    private GameWindow      wnd;        /*!< Fereastra in care se va desena tabla jocului*/
+    private static GameWindow       wnd;        /*!< Fereastra in care se va desena tabla jocului*/
     private static Camera camera;
     private static Player player;
     private static Entity enemy1;
@@ -63,8 +63,6 @@ public class Game implements Runnable,KeyListener, MouseListener
     private BufferStrategy  bs;         /*!< Referinta catre un mecanism cu care se organizeaza memoria complexa pentru un canvas.*/
     private static boolean drawMsg;
     public Save save;
-    private long lastAttackTime = 0;
-    private final int attackCooldown = 600;
     private MainMenu menu;
     private static boolean isCreatingChar=false;
 
@@ -85,7 +83,7 @@ public class Game implements Runnable,KeyListener, MouseListener
 
 
     public enum GAME_STATE{
-        MENU, LEVEL_SELECTION, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE, FIGHT_SCENE, CHAR_CREATION
+        MENU, LEVEL_SELECTION, LEVEL_ONE, LEVEL_TWO, LEVEL_THREE, CHAR_CREATION
     }
     public static GAME_STATE state=GAME_STATE.MENU;
     public static GAME_STATE currentLevel=GAME_STATE.MENU;
@@ -130,6 +128,7 @@ public class Game implements Runnable,KeyListener, MouseListener
         menu = new MainMenu(this,g);
         wnd.GetCanvas().addKeyListener(this);
         if(menu!=null) {
+            System.out.printf("Added mouse listener for menu");
             wnd.GetCanvas().addMouseListener(menu);
             wnd.GetCanvas().addMouseMotionListener(menu);
         }
@@ -169,7 +168,7 @@ public class Game implements Runnable,KeyListener, MouseListener
                 /// Daca diferenta de timp dintre curentTime si oldTime mai mare decat 16.6 ms
             if((curentTime - oldTime) > timeFrame)
             {
-                if(state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE || state==GAME_STATE.FIGHT_SCENE) {
+                if(state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE ) {
                     /// Actualizeaza pozitiile elementelor
                     Update();
                     /// Deseneaza elementele grafica in fereastra.
@@ -180,7 +179,7 @@ public class Game implements Runnable,KeyListener, MouseListener
             }
             //Pentru cand jucatorul pierde
             if (player.getHealth() <= 0) {
-                wnd.showLossMessage(g);
+               // wnd.showLossMessage(g);
                 bs.show();
                 g.dispose();
 
@@ -190,7 +189,7 @@ public class Game implements Runnable,KeyListener, MouseListener
                     // Updatam bufferul pt ca mesajul sa ramana vizibil
                     bs = wnd.GetCanvas().getBufferStrategy();
                     g = bs.getDrawGraphics();
-                    wnd.showLossMessage(g);
+                   // wnd.showLossMessage(g);
                     bs.show();
                     g.dispose();
                 }
@@ -204,7 +203,7 @@ public class Game implements Runnable,KeyListener, MouseListener
             }
 
             if(enemy1 !=null&& enemy1.getHealth()<=0){
-                wnd.showWinningMessage(g);
+                //wnd.showWinningMessage(g);
                 bs.show();
                 g.dispose();
 
@@ -214,7 +213,7 @@ public class Game implements Runnable,KeyListener, MouseListener
                     // Updatam bufferul pt ca mesajul sa ramana vizibil
                     bs = wnd.GetCanvas().getBufferStrategy();
                     g = bs.getDrawGraphics();
-                    wnd.showWinningMessage(g);
+                  //  wnd.showWinningMessage(g);
                     bs.show();
                     g.dispose();
                 }
@@ -227,7 +226,7 @@ public class Game implements Runnable,KeyListener, MouseListener
                 //break; // Break out of the loop to simulate transition
             }
             if(e2!=null&&e2.getHealth()<=0){
-                wnd.showWinningMessage(g);
+               // wnd.showWinningMessage(g);
                 bs.show();
                 g.dispose();
 
@@ -237,7 +236,7 @@ public class Game implements Runnable,KeyListener, MouseListener
                     // Updatam bufferul pt ca mesajul sa ramana vizibil
                     bs = wnd.GetCanvas().getBufferStrategy();
                     g = bs.getDrawGraphics();
-                    wnd.showWinningMessage(g);
+                   // wnd.showWinningMessage(g);
                     bs.show();
                     g.dispose();
                 }
@@ -295,7 +294,7 @@ public class Game implements Runnable,KeyListener, MouseListener
                     /// Metoda join() pune un thread in asteptare panca cand un altul isi termina executie.
                     /// Totusi, in situatia de fata efectul apelului este de oprire a threadului.
                 gameThread.join();
-                wnd.closeWindow();
+              //  wnd.closeWindow();
             }
             catch(InterruptedException ex)
             {
@@ -361,7 +360,7 @@ public class Game implements Runnable,KeyListener, MouseListener
         //Tile.WoodBox.Draw(g,2*Tile.TILE_WIDTH,0);
         //g.translate((int)-camera.getX(), (int)-camera.getY());
         if(state==GAME_STATE.LEVEL_ONE || state==GAME_STATE.LEVEL_TWO || state==GAME_STATE.LEVEL_THREE) {
-
+            //TODO fix attack registering
             camera.centerOnEntity(player);
 
             // Apply camera translation
@@ -387,15 +386,14 @@ public class Game implements Runnable,KeyListener, MouseListener
             g.drawImage(Assets.background, 0, 0, null);
             camera.backToZero();
             MainMenu.render(g);
-        }else if (state==GAME_STATE.FIGHT_SCENE){
-            //FightScene.render(g); //old combat
         }else if (state==GAME_STATE.CHAR_CREATION){
             CharacterCreation creation = new CharacterCreation(new DynamicAssetBuilder(64,256));
             if(!isCreatingChar) {
                 wnd.GetCanvas().addMouseListener(creation);
                 isCreatingChar = true;
+                creation.render();
             }
-            creation.draw();
+
         }
         if(drawMsg){
             if (g != null) {
@@ -510,6 +508,10 @@ public class Game implements Runnable,KeyListener, MouseListener
     public static void setPlayerCoords(int newX,int newY){
         player.setX(newX);
         player.setY(newY);
+    }
+
+    public static GameWindow getGameWnd(){
+        return wnd;
     }
 
     public static Camera retCamera(){

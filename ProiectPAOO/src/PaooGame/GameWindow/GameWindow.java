@@ -5,163 +5,92 @@ import PaooGame.Graphics.Assets;
 import javax.swing.*;
 import java.awt.*;
 
-/*! \class GameWindow
-    \brief Implementeaza notiunea de fereastra a jocului.
-
-    Membrul wndFrame este un obiect de tip JFrame care va avea utilitatea unei
-    ferestre grafice si totodata si cea a unui container (toate elementele
-    grafice vor fi continute de fereastra).
- */
-public class GameWindow
-{
+public class GameWindow {
     public static final int WIDTH = 1280;
     public static final int HEIGHT = 720;
-    private JFrame  wndFrame;       /*!< fereastra principala a jocului*/
-    private String  wndTitle;       /*!< titlul ferestrei*/
-    private int     wndWidth;       /*!< latimea ferestrei in pixeli*/
-    private int     wndHeight;      /*!< inaltimea ferestrei in pixeli*/
+    private JFrame wndFrame;
+    private String wndTitle;
+    private int wndWidth;
+    private int wndHeight;
 
-    private Canvas  canvas;         /*!< "panza/tablou" in care se poate desena*/
+    private Canvas canvas;
+    private JPanel contentPane;  // New container to hold layouts
 
-    /*! \fn GameWindow(String title, int width, int height)
-            \brief Constructorul cu parametri al clasei GameWindow
-
-            Retine proprietatile ferestrei proprietatile (titlu, latime, inaltime)
-            in variabilele membre deoarece vor fi necesare pe parcursul jocului.
-            Crearea obiectului va trebui urmata de crearea ferestrei propriuzise
-            prin apelul metodei BuildGameWindow()
-
-            \param title Titlul ferestrei.
-            \param width Latimea ferestrei in pixeli.
-            \param height Inaltimea ferestrei in pixeli.
-         */
-    public GameWindow(String title, int width, int height){
-        wndTitle    = title;    /*!< Retine titlul ferestrei.*/
-        wndWidth    = width;    /*!< Retine latimea ferestrei.*/
-        wndHeight   = height;   /*!< Retine inaltimea ferestrei.*/
-        wndFrame    = null;     /*!< Fereastra nu este construita.*/
+    public GameWindow(String title, int width, int height) {
+        wndTitle = title;
+        wndWidth = width;
+        wndHeight = height;
+        wndFrame = null;
     }
 
-    /*! \fn private void BuildGameWindow()
-        \brief Construieste/creaza fereastra si seteaza toate proprietatile
-        necesare: dimensiuni, pozitionare in centrul ecranului, operatia de
-        inchidere, invalideaza redimensionarea ferestrei, afiseaza fereastra.
-
-     */
-    public void BuildGameWindow()
-    {
-            /// Daca fereastra a mai fost construita intr-un apel anterior
-            /// se renunta la apel
-        if(wndFrame != null)
-        {
+    public void BuildGameWindow() {
+        if (wndFrame != null) {
             return;
         }
-            /// Aloca memorie pentru obiectul de tip fereastra si seteaza denumirea
-            /// ce apare in bara de titlu
-        wndFrame = new JFrame(wndTitle);
-            /// Seteaza dimensiunile ferestrei in pixeli
-        wndFrame.setSize(wndWidth, wndHeight);
-            /// Operatia de inchidere (fereastra sa poata fi inchisa atunci cand
-            /// este apasat butonul x din dreapta sus al ferestrei). Totodata acest
-            /// lucru garanteaza ca nu doar fereastra va fi inchisa ci intregul
-            /// program
-        wndFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            /// Avand in vedere ca dimensiunea ferestrei poate fi modificata
-            /// si corespunzator continutul actualizat (aici ma refer la dalele
-            /// randate) va recomand sa constrangeti deocamdata jucatorul
-            /// sa se joace in fereastra stabilitata de voi. Puteti reveni asupra
-            /// urmatorului apel ulterior.
-        wndFrame.setResizable(false);
-            /// Recomand ca fereastra sa apara in centrul ecranului. Pentru orice
-            /// alte pozitie se va apela "wndFrame.setLocation(x, y)" etc.
-        wndFrame.setLocationRelativeTo(null);
-            /// Implicit o fereastra cand este creata nu este vizibila motiv pentru
-            /// care trebuie setata aceasta proprietate
-        wndFrame.setVisible(true);
 
-            /// Creaza obiectul de tip canvas (panza) pe care se poate desena.
+        wndFrame = new JFrame(wndTitle);
+        wndFrame.setLayout(new BorderLayout());
+        wndFrame.setSize(wndWidth, wndHeight);
+        wndFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        wndFrame.setResizable(true);
+        wndFrame.setLocationRelativeTo(null);
+
+        // Create a JPanel as the new main container (content pane)
+        contentPane = new JPanel(new BorderLayout());
+        wndFrame.setContentPane(contentPane);
+
         canvas = new Canvas();
-            /// In aceeasi maniera trebuiesc setate proprietatile pentru acest obiect
-            /// canvas (panza): dimensiuni preferabile, minime, maxime etc.
-            /// Urmotorul apel de functie seteaza dimensiunea "preferata"/implicita
-            /// a obiectului de tip canvas.
-            /// Functia primeste ca parametru un obiect de tip Dimension ca incapsuleaza
-            /// doua proprietati: latime si inaltime. Cum acest obiect nu exista
-            /// a fost creat unul si dat ca parametru.
         canvas.setPreferredSize(new Dimension(wndWidth, wndHeight));
-            /// Avand in vedere ca elementele unei ferestre pot fi scalate atunci cand
-            /// fereastra este redimensionata
         canvas.setMaximumSize(new Dimension(wndWidth, wndHeight));
         canvas.setMinimumSize(new Dimension(wndWidth, wndHeight));
-            /// Avand in vedere ca obiectul de tip canvas, proaspat creat, nu este automat
-            /// adaugat in fereastra trebuie apelata metoda add a obiectul wndFrame
-        wndFrame.add(canvas);
-            /// Urmatorul apel de functie are ca scop eventuala redimensionare a ferestrei
-            /// ca tot ce contine sa poate fi afisat complet
+
+        // Add canvas to CENTER of contentPane (but this can be removed later if needed)
+        wndFrame.add(canvas, BorderLayout.CENTER);
         wndFrame.pack();
+        wndFrame.setVisible(true);
     }
-    public void closeWindow() {
-        if (wndFrame != null) {
-            wndFrame.dispose(); // Dispose of the window
+
+    public void setCustomLayout(LayoutManager layout) {
+        if(canvas!=null && contentPane!=null) {
+            //contentPane.removeAll();
+
+            wndFrame.setLayout(layout);
+            //   contentPane.add(canvas, layout);
+            wndFrame.revalidate();
+            wndFrame.repaint();
         }
-
     }
 
-    /*! \fn public int GetWndWidth()
-        \brief Returneaza latimea ferestrei.
-     */
-    public int GetWndWidth()
-    {
+    public JPanel getContentPane() {
+        return contentPane;
+    }
+
+    public void resetToDefaultLayout() {
+        contentPane.removeAll();
+        contentPane.add(canvas, BorderLayout.CENTER);
+        contentPane.revalidate();
+        contentPane.repaint();
+    }
+
+    public int GetWndWidth() {
         return wndWidth;
     }
 
-    /*! \fn public int GetWndWidth()
-        \brief Returneaza inaltimea ferestrei.
-     */
-    public int GetWndHeight()
-    {
+    public int GetWndHeight() {
         return wndHeight;
     }
-
-    /*! \fn public int GetCanvas()
-        \brief Returneaza referinta catre canvas-ul din fereastra pe care se poate desena.
-     */
-    public Canvas GetCanvas() {
-        return canvas;
-    }
-    public void showLossMessage(Graphics g) {
-        g.clearRect(0, 0, 1500, 1250);
-        g.drawImage(Assets.battleBackground, 0, 0, null);
-        Font fnt1 = new Font("Arial", Font.BOLD, 40);
-        g.setFont(fnt1);
-        g.setColor(Color.black);
-        g.drawString("You've lost!", WIDTH / 2 + 50, HEIGHT);
-    }
-
-    public void showWinningMessage(Graphics g){
-        g.clearRect(0, 0, 1500, 1250);
-        g.drawImage(Assets.battleBackground, 0, 0, null);
-        Font fnt1 = new Font("Arial", Font.BOLD, 40);
-        g.setFont(fnt1);
-        g.setColor(Color.black);
-        g.drawString("You have defeated the enemy!", (WIDTH-250) / 2 + 50, HEIGHT); //1200 500
-    }
-
-//    public static void drawMessage(double x, double y, Graphics g) {
-//        if (g != null) {
-//            // Replace with actual message drawing code
-//            g.setColor(Color.BLACK);
-//            g.drawString("Ai un milion pana luni?", (int)x, (int)y);
-//        } else {
-//            System.out.println("DEBUG: Graphics context is null");
-//        }
-//    }
-
     public static int getWidth(){
         return WIDTH;
     }
     public static int getHeight(){
         return HEIGHT;
     }
-}
 
+    public Canvas GetCanvas() {
+        return canvas;
+    }
+
+    public JFrame getWndFrame() {
+        return wndFrame;
+    }
+}
