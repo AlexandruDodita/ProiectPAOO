@@ -154,7 +154,7 @@ public class MainMenu implements MouseListener, MouseMotionListener {
         Game.currentLevel = level;
         Game.setPlayerCoords(40,900);
         Player.setHealth(100);
-        Player.modifyPlayerCamera(0,0);
+
 
         if (level == Game.GAME_STATE.LEVEL_ONE) {
             Game.setEntity(Entity.EntityType.ENEMY, 100);

@@ -64,7 +64,8 @@ public class Game implements Runnable,KeyListener, MouseListener
     private static boolean drawMsg;
     public Save save;
     private MainMenu menu;
-    private static boolean isCreatingChar=false;
+    public static boolean isCreatingChar=false;
+    private CharacterCreation creation;
 
     /// Sunt cateva tipuri de "complex buffer strategies", scopul fiind acela de a elimina fenomenul de
     /// flickering (palpaire) a ferestrei.
@@ -74,7 +75,7 @@ public class Game implements Runnable,KeyListener, MouseListener
     ///                         |                                                 |
     ///                 ****************          *****************        ***************
     ///                 *              *   Show   *               *        *             *
-    /// [ Ecran ] <---- * Front Buffer *  <------ * Middle Buffer * <----- * Back Buffer * <---- Draw()
+    /// [ ///Screen ] <---- * Front Buffer *  <------ * Middle Buffer * <----- * Back Buffer * <---- Draw()
     ///                 *              *          *               *        *             *
     ///                 ****************          *****************        ***************
 
@@ -122,6 +123,7 @@ public class Game implements Runnable,KeyListener, MouseListener
         /// Este construita fereastra grafica.
         wnd.BuildGameWindow();
         /// Se incarca toate elementele grafice (dale)
+        Assets.defaultCharInit();
         Assets.Init();
 
         player = new Player();
@@ -383,15 +385,17 @@ public class Game implements Runnable,KeyListener, MouseListener
             camera.centerOnEntity(player);
             //g.translate((int) camera.getX(), (int) camera.getY());
         }else if (state == GAME_STATE.MENU || state == GAME_STATE.LEVEL_SELECTION) {
-            g.drawImage(Assets.background, 0, 0, null);
+            g.drawImage(Assets.background, 0, 0, GameWindow.getWidth(),GameWindow.getHeight(), null);
             camera.backToZero();
             MainMenu.render(g);
         }else if (state==GAME_STATE.CHAR_CREATION){
-            CharacterCreation creation = new CharacterCreation(new DynamicAssetBuilder(64,256));
+
             if(!isCreatingChar) {
-                wnd.GetCanvas().addMouseListener(creation);
                 isCreatingChar = true;
+                creation = new CharacterCreation();
                 creation.render();
+            }else{
+              //  state=GAME_STATE.LEVEL_SELECTION;
             }
 
         }
@@ -496,6 +500,7 @@ public class Game implements Runnable,KeyListener, MouseListener
     public static Entity getFriendly(){
         return friendly;
     }
+    public static Player getPlayer(){ return player;}
     public static void setEntity(Entity.EntityType Type, int Health){
         enemy1 =new Entity(Type,Health,true);
     }

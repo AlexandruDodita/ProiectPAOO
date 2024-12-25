@@ -17,10 +17,9 @@ import PaooGame.Tiles.*;
 public class Player {
     private int x, y;
     private final int speed = 7;
-    private BufferedImage[][] idleFrames;
-    //new method for cleaner code
-    private BufferedImage[][] moveFrames;
-    private BufferedImage[][] attackFrames;
+    private static BufferedImage[][] idleFrames;
+    private static BufferedImage[][] moveFrames;
+    private static BufferedImage[][] attackFrames;
 
     private final int nrIdleFrames = 1;
     private final int directions = 4;
@@ -65,17 +64,8 @@ public class Player {
             moveFrames[i] = new BufferedImage[nrRunFrames];
             attackFrames[i] = new BufferedImage[nrAttackFrames];
         }
-        for(int j=0;j<directions;j++) {
-            for (int i = 0; i < nrIdleFrames; i++) {
-                idleFrames[j][i] = playerIdle.cropMainChar(i, j, frameWidth, frameHeight);
-            }
-            for(int i = 0; i < nrRunFrames; i++) {
-                moveFrames[j][i]=playerRun.cropMainChar(i, j, frameWidth, frameHeight);
-            }
-            for(int i=0;i< nrAttackFrames;i++){
-                attackFrames[j][i]=playerAttackSword.cropMainChar(i, j, frameAttackWidth, frameAttackHeight);
-            }
-        }
+
+        updatePlayerTextures();
 
         currentFrame = 0; //frame-urile incep de la 0
         frameDelay = 5;     //cu un delay de 5 frame-uri
@@ -92,6 +82,22 @@ public class Player {
         x = 80;
         y = 900;
 
+    }
+
+    public void updatePlayerTextures(){
+        //System.out.println("We updated the player textures");
+        loadPlayerAnim();
+        for(int j=0;j<directions;j++) {
+            for (int i = 0; i < nrIdleFrames; i++) {
+                idleFrames[j][i] = playerIdle.cropMainChar(i, j, frameWidth, frameHeight);
+            }
+            for(int i = 0; i < nrRunFrames; i++) {
+                moveFrames[j][i]=playerRun.cropMainChar(i, j, frameWidth, frameHeight);
+            }
+            for(int i=0;i< nrAttackFrames;i++){
+                attackFrames[j][i]=playerAttackSword.cropMainChar(i, j, frameAttackWidth, frameAttackHeight);
+            }
+        }
     }
 
     public void update() { //construit pentru a trata coliziunile, momentan nu functioneaza conform asteptarilor
@@ -347,6 +353,9 @@ public class Player {
 //        invis.setY(y);
 
     }
+
+    public BufferedImage[][] getIdleFrames(){ return idleFrames; } //used to show character changes in-real-time in CHAR_CREATION state.
+                                                                            //Will not work if there is no Player instance!!!
 
     public int getTextureWidth(){
         return frameWidth;
