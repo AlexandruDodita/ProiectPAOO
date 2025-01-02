@@ -1,227 +1,301 @@
 package PaooGame.GameWindow;
 
-import PaooGame.Entity.Entity;
-import PaooGame.Entity.Player;
 import PaooGame.Game;
-import PaooGame.Save;
+import PaooGame.Graphics.Assets;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
-import java.util.List;
 
+public class MainMenu {
+    private Graphics g;
+    private static JFrame wnd;
+    private static final MainMenu instance = new MainMenu();
+    private static final int BUTTON_WIDTH = 200;
+    private static final int BUTTON_HEIGHT = 50;
+    private static final int BUTTON_SPACING = 20;
 
-
-public class MainMenu implements MouseListener, MouseMotionListener {
-    private static Game game;
-    public final static int centerX=21;
-    public final static int centerY=36;
-    private static int width, height;
-
-    public MainMenu(Game game, Graphics g) {
-        this.game = game;
-        width=GameWindow.WIDTH;
-        height=GameWindow.HEIGHT;
+    private MainMenu() {
+        g = Game.getGraphicalContext();
+        GameWindow gameWindow = Game.getGameWnd();
+        wnd = gameWindow.getWndFrame();
     }
 
-    private static MenuScreen mainMenu;
-    private static MenuScreen levelSelection;
 
+    public void render() {
+        // Create background panel with custom painting
+        // Add a semi-transparent overlay for better text readability
+        // Draw game title
+        JPanel backgroundPanel = backgroundInit();
 
+        wnd.setContentPane(backgroundPanel);
+        backgroundPanel.setLayout(new GridBagLayout());
 
-    private static class MenuOption{
-        String label;
-        Rectangle bounds;
-        Runnable action;
-        boolean hovered;
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+        buttonPanel.setOpaque(false);
 
-        MenuOption(String label, int x, int y, int width, int height, Runnable action){
-            this.label = label;
-            this.bounds=new Rectangle(x,y,width,height);
-            this.action=action;
+        JButton[] buttons = {
+                createMenuButton("Play"),
+                createMenuButton("Load Game"),
+                createMenuButton("Options"),
+                createMenuButton("Credits"),
+                createMenuButton("Exit")
+        };
+
+        for (JButton button : buttons) {
+            buttonPanel.add(button);
+            buttonPanel.add(Box.createRigidArea(new Dimension(0, BUTTON_SPACING)));
         }
 
-        void render(Graphics g, Font font) {
-            g.setFont(font);
-            FontMetrics fm = g.getFontMetrics(font);
 
-            int textWidth = fm.stringWidth(label);
-            int textHeight = fm.getAscent()/2 - fm.getDescent()*5;
+        backgroundPanel.add(buttonPanel);
 
-            int textX = bounds.x + (bounds.width - textWidth) / 2;
-            int textY = bounds.y + (bounds.height - textHeight) / 2;
-            g.drawString(label,textX,textY);
-            //((Graphics2D)g).draw(bounds); //no longer needed, shows the boundaries for each clickable part
+        JLabel versionLabel = new JLabel("Version 0.0.0");
+        versionLabel.setForeground(Color.WHITE);
+        versionLabel.setFont(new Font("Arial", Font.PLAIN, 12));
 
-            if(hovered){
-                g.setColor(new Color(255,255,255,128));
-                g.fillRect(bounds.x,bounds.y,bounds.width,bounds.height);
-            }
-            g.setColor(Color.BLACK);
-            g.drawString(label,textX,textY);
-        }
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        bottomPanel.setOpaque(false);
+        bottomPanel.add(versionLabel);
 
-        boolean isClicked(int mx, int my){
-            return bounds.contains(mx,my);
-        }
+        backgroundPanel.add(bottomPanel, new GridBagConstraints() {{
+            gridy = 1;
+            anchor = GridBagConstraints.SOUTHEAST;
+            insets = new Insets(0, 0, 10, 10);
+        }});
 
-        void performAction(){
-            if(action!=null){
-                action.run();
-            }
-        }
-
-        void setHovered(boolean hovered){
-            this.hovered=hovered;
-        }
+        wnd.revalidate();
+        wnd.repaint();
+        wnd.setVisible(true);
     }
 
-    private static class MenuScreen{
-        String title;
-        List<MenuOption> options = new ArrayList<>();
 
-        MenuScreen(String title){
-            this.title = title;
-        }
+    public static MainMenu getInstance() {
+        return instance;
+    }
 
-        void addOption(MenuOption option){
-            options.add(option);
-        }
+    public static JPanel backgroundInit(){
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(Assets.battleBackground, 0, 0, getWidth(), getHeight(), this);
 
-        void render(Graphics g){
-            // Render title
-            g.setFont(new Font("arial", Font.BOLD, 50));
-            FontMetrics titleMetrics = g.getFontMetrics();
-            int titleWidth = titleMetrics.stringWidth(title);
-            g.drawString(title, (width - titleWidth) / 2, 100);
+                g.setColor(new Color(0, 0, 0, 100));
+                g.fillRect(0, 0, getWidth(), getHeight());
 
-            // Render options
-            Font optionFont = new Font("arial", Font.BOLD, 30);
-            int optionYStart = height / 2 - options.size() * 60 / 2; // Space evenly around the center
-
-            for (int i = 0; i < options.size(); i++) {
-                MenuOption option = options.get(i);
-                int optionWidth = 125; // Arbitrary button width
-                int optionHeight = 50; // Arbitrary button height
-                int optionX = (width - optionWidth) / 2; // Center horizontally
-                int optionY = optionYStart + i * 70; // Add spacing between options
-
-                // Update the bounds to reflect the new dynamic positioning
-                option.bounds = new Rectangle(optionX, optionY, optionWidth, optionHeight);
-                option.render(g, optionFont);
+                g.setColor(Color.WHITE);
+                g.setFont(new Font("Arial", Font.BOLD, 48));
+                String title = "Knightly Order";
+                FontMetrics fm = g.getFontMetrics();
+                int titleX = (getWidth() - fm.stringWidth(title)) / 2;
+                g.drawString(title, titleX, 100);
             }
+        };
+        return backgroundPanel;
+    }
+
+    private static JButton createMenuButton(String text) {
+        JButton button = new JButton(text);
+        button.setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        button.setMaximumSize(new Dimension(BUTTON_WIDTH, BUTTON_HEIGHT));
+        button.setFont(new Font("Arial", Font.BOLD, 20));
+
+        // Enhanced button styling
+        button.setForeground(Color.WHITE);
+        button.setBackground(new Color(45, 45, 65));
+        button.setFocusPainted(false);
+        button.setBorderPainted(true);
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(80, 80, 120), 2),
+                BorderFactory.createEmptyBorder(5, 15, 5, 15)
+        ));
+        button.setOpaque(true);
+
+        // Enhanced hover effect with gradient
+        button.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(new Color(65, 65, 95));
+                button.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(120, 120, 180), 2),
+                        BorderFactory.createEmptyBorder(5, 15, 5, 15)
+                ));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(new Color(45, 45, 65));
+                button.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(80, 80, 120), 2),
+                        BorderFactory.createEmptyBorder(5, 15, 5, 15)
+                ));
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                button.setBackground(new Color(35, 35, 55));
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                button.setBackground(new Color(45, 45, 65));
+            }
+        });
+
+        switch (text) {
+            case "Play":
+                button.addActionListener(e -> {
+                    Game.state = Game.GAME_STATE.LEVEL_SELECTION;
+                    //Game.currentLevel = Game.GAME_STATE.LEVEL_ONE;
+                    Game.isInMenu = false;
+                    wnd.setContentPane(Game.getGameWnd().getContentPane());
+                });
+                break;
+            case "Exit":
+                button.addActionListener(e -> System.exit(0));
+                break;
+            case "Options": //TODO add a separate options screen which temporarily houses a button for going into CHAR_CREATION
+                button.addActionListener(e -> {
+                    Game.state = Game.GAME_STATE.CHAR_CREATION;
+                    //Game.currentLevel = Game.GAME_STATE.CHAR_CREATION;
+                    Game.isInMenu = false;
+                    wnd.setContentPane(Game.getGameWnd().getContentPane());
+                });
+                break;
+            case "Level One": //TODO add a separate options screen which temporarily houses a button for going into CHAR_CREATION
+                button.addActionListener(e -> {
+                    Game.setPlayerCoords(40,900);
+                    Game.state = Game.GAME_STATE.LEVEL_ONE;
+                    Game.currentLevel = Game.GAME_STATE.LEVEL_ONE;
+                    Game.isInLevelSelection = false;
+                    wnd.setContentPane(Game.getGameWnd().getContentPane());
+                });
+                break;
+            case "Level Two":
+                button.addActionListener(e -> {
+                    Game.setPlayerCoords(40,900);
+                    Game.state = Game.GAME_STATE.LEVEL_TWO;
+                    Game.currentLevel = Game.GAME_STATE.LEVEL_TWO;
+                    Game.isInLevelSelection = false;
+                    wnd.setContentPane(Game.getGameWnd().getContentPane());
+                });
+                break;
+            case "Level Three":
+                button.addActionListener(e -> {
+                    Game.setPlayerCoords(40,900);
+                    Game.state = Game.GAME_STATE.LEVEL_THREE;
+                    Game.currentLevel = Game.GAME_STATE.LEVEL_THREE;
+                    Game.isInLevelSelection = false;
+                    wnd.setContentPane(Game.getGameWnd().getContentPane());
+                });
+                break;
+            default:
+                //placeholder action listeners
+                button.addActionListener(e -> System.out.println(text + " clicked"));
+        }
+        return button;
+    }
+
+    public static class LevelSelection {
+        private static final String LEVEL_TITLE = "Select Level";
+        private static JLabel levelDescription;
+
+        public static void render() {
+            if (wnd == null) {
+                wnd = Game.getGameWnd().getWndFrame();
+            }
+
+            JPanel backgroundPanel = backgroundInit();
+            wnd.setContentPane(backgroundPanel);
+
+            // Main layout
+            backgroundPanel.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+
+            // Create title panel
+            JPanel titlePanel = new JPanel();
+            titlePanel.setOpaque(false);
+            JLabel titleLabel = new JLabel(LEVEL_TITLE);
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 36));
+            titleLabel.setForeground(Color.WHITE);
+            titlePanel.add(titleLabel);
+
+            // Create description panel
+            JPanel descriptionPanel = new JPanel();
+            descriptionPanel.setOpaque(false);
+            levelDescription = new JLabel("Hover over a level to see its description");
+            levelDescription.setFont(new Font("Arial", Font.ITALIC, 16));
+            levelDescription.setForeground(Color.WHITE);
+            descriptionPanel.add(levelDescription);
+
+            // Create button panel
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+            buttonPanel.setOpaque(false);
+
+            // Create level buttons with descriptions
+            JButton[] buttons = {
+                    createLevelButton("Level One", "Begin your journey as a knight"),
+                    createLevelButton("Level Two", "Face stronger enemies and prove your worth"),
+                    createLevelButton("Level Three", "The final challenge awaits"),
+                    createBackButton()
+            };
+
+            for (JButton button : buttons) {
+                buttonPanel.add(button);
+                buttonPanel.add(Box.createRigidArea(new Dimension(0, BUTTON_SPACING)));
+            }
+
+            // Add components to the background panel
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.insets = new Insets(20, 0, 20, 0);
+            backgroundPanel.add(titlePanel, gbc);
+
+            gbc.gridy = 1;
+            gbc.insets = new Insets(0, 0, 20, 0);
+            backgroundPanel.add(descriptionPanel, gbc);
+
+            gbc.gridy = 2;
+            gbc.insets = new Insets(0, 0, 20, 0);
+            backgroundPanel.add(buttonPanel, gbc);
+
+            wnd.revalidate();
+            wnd.repaint();
+            wnd.setVisible(true);
         }
 
-        void handleClick(int mx, int my){
-            for(MenuOption option : options){
-                if(option.isClicked(mx,my)){
-                    option.performAction();
-                    break;
+        private static JButton createLevelButton(String text, String description) {
+            JButton button = createMenuButton(text);
+
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    super.mouseEntered(e);
+                    levelDescription.setText(description);
                 }
-            }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    super.mouseExited(e);
+                    levelDescription.setText("Hover over a level to see its description");
+                }
+            });
+
+            return button;
         }
 
-        void handleHover(int mx, int my) {
-            for (MenuOption option : options) {
-                option.setHovered(option.bounds.contains(mx, my));
-            }
-        }
-    }
-
-    public static void initialize(){ //initialises both mainMenu and levelSelection screens with their respective options
-        mainMenu = new MenuScreen("Knightly Order");
-                    //Play is currently set to CHAR_CREATION state for easier testing. To be modified back to LEVEL_SELECTION
-        mainMenu.addOption(new MenuOption("Play", width / 2 - width/20, 100, 100, 50, () -> Game.state = Game.GAME_STATE.CHAR_CREATION));
-        mainMenu.addOption(new MenuOption("Help", width / 2 - width/20, 200, 100, 50, () -> System.out.println("Help was not yet implemented")));
-        mainMenu.addOption(new MenuOption("Exit", width / 2 - width/20, 300, 100, 50, game::StopGame));
-
-        levelSelection = new MenuScreen("Level Selection");
-        levelSelection.addOption(new MenuOption("Level 1", width / 2- width/20, 150, 125, 50, () -> loadLevel(Game.GAME_STATE.LEVEL_ONE)));
-        levelSelection.addOption(new MenuOption("Level 2", width / 2 - width/20, 250, 125, 50, () -> {
-            if (Save.converterData() >= 2) loadLevel(Game.GAME_STATE.LEVEL_TWO);
-            else System.out.println("LEVEL LOCKED. COMPLETE PREVIOUS LEVEL FIRST!");
-        }));
-        levelSelection.addOption(new MenuOption("Level 3", width / 2 + width/10, 350, 125, 50, () -> {
-            if (Save.converterData() >= 3) loadLevel(Game.GAME_STATE.LEVEL_THREE);
-            else System.out.println("LEVEL LOCKED. COMPLETE PREVIOUS LEVEL FIRST!");
-        }));
-    }
-
-    private static void loadLevel(Game.GAME_STATE level){ //loads the level as needed
-        Game.state = level;
-        Game.currentLevel = level;
-        Game.setPlayerCoords(40,900);
-        Player.setHealth(100);
-
-
-        if (level == Game.GAME_STATE.LEVEL_ONE) {
-            Game.setEntity(Entity.EntityType.ENEMY, 100);
-        } else if (level == Game.GAME_STATE.LEVEL_TWO) {
-            Game.setEntity(Entity.EntityType.ENEMY, 200);
-        } else if (level == Game.GAME_STATE.LEVEL_THREE) {
-            Game.setEntity(Entity.EntityType.ENEMY, 400);
-            Game.setFriendly(100);
-        }
-    }
-
-    public static void render(Graphics g) {
-
-        if(Game.state ==Game.GAME_STATE.MENU){
-            mainMenu.render(g);
-        }else if(Game.state == Game.GAME_STATE.LEVEL_SELECTION){
-            levelSelection.render(g);
-        }
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        // This method can be left empty if not used
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        int mx = e.getX();
-        int my = e.getY();
-
-        if (Game.state == Game.GAME_STATE.MENU) {
-            mainMenu.handleClick(mx, my);
-        } else if (Game.state == Game.GAME_STATE.LEVEL_SELECTION) {
-            levelSelection.handleClick(mx, my);
-        }
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
-    //mouseMotionListener methods
-    @Override
-    public void mouseDragged(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        int mx = e.getX();
-        int my = e.getY();
-
-        if (Game.state == Game.GAME_STATE.MENU) {
-            mainMenu.handleHover(mx, my);
-        } else if (Game.state == Game.GAME_STATE.LEVEL_SELECTION) {
-            levelSelection.handleHover(mx, my);
+        private static JButton createBackButton() {
+            JButton backButton = createMenuButton("Back to Main Menu");
+            backButton.addActionListener(e -> {
+                Game.state = Game.GAME_STATE.MENU;
+                Game.isInMenu = true;
+                MainMenu.getInstance().render();
+            });
+            return backButton;
         }
     }
 }

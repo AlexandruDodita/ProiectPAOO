@@ -3,6 +3,7 @@ package PaooGame;
 import PaooGame.Entity.Entity;
 import PaooGame.Entity.Player;
 import PaooGame.GameWindow.*;
+import PaooGame.GameWindow.MainMenu;
 import PaooGame.Graphics.*;
 
 import javax.swing.*;
@@ -12,7 +13,6 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.security.Key;
 
 import static PaooGame.Graphics.MapBuilder.*;
 
@@ -64,6 +64,9 @@ public class Game implements Runnable,KeyListener, MouseListener
     private static boolean drawMsg;
     public Save save;
     private MainMenu menu;
+    //    private MainMenu menu; //old implementation
+    public static boolean isInMenu = false;
+    public static boolean isInLevelSelection = false;
     public static boolean isCreatingChar=false;
     private CharacterCreation creation;
 
@@ -127,16 +130,16 @@ public class Game implements Runnable,KeyListener, MouseListener
         Assets.Init();
 
         player = new Player();
-        menu = new MainMenu(this,g);
+        //menu = new MainMenu(this,g);
         wnd.GetCanvas().addKeyListener(this);
-        if(menu!=null) {
-            System.out.printf("Added mouse listener for menu");
-            wnd.GetCanvas().addMouseListener(menu);
-            wnd.GetCanvas().addMouseMotionListener(menu);
-        }
+//        if(menu!=null) {
+//            System.out.printf("Added mouse listener for menu");
+//            wnd.GetCanvas().addMouseListener(menu);
+//            wnd.GetCanvas().addMouseMotionListener(menu);
+//        }
         wnd.GetCanvas().addMouseListener(this);
 
-        MainMenu.initialize();
+//        MainMenu.initialize();
         save= new Save();
         save.database();
 
@@ -179,77 +182,31 @@ public class Game implements Runnable,KeyListener, MouseListener
 
                 Draw();
             }
-            //Pentru cand jucatorul pierde
-            if (player.getHealth() <= 0) {
-               // wnd.showLossMessage(g);
-                bs.show();
-                g.dispose();
+            //TODO Reminder to rework and re-add handling for when the enemies or player die
+//            if (player.getHealth() <= 0) {
+//               // wnd.showLossMessage(g);
+//                bs.show();
+//                g.dispose();
+//
+//
+//                long startTime = System.currentTimeMillis();
+//                while (System.currentTimeMillis() - startTime < 4000) {
+//                    // Updatam bufferul pt ca mesajul sa ramana vizibil
+//                    bs = wnd.GetCanvas().getBufferStrategy();
+//                    g = bs.getDrawGraphics();
+//                   // wnd.showLossMessage(g);
+//                    bs.show();
+//                    g.dispose();
+//                }
+//
+//                // Resetam viata pentru a nu ne bloca in mesajul de loss
+//                player.setHealth(100);
+//                Game.state = Game.GAME_STATE.MENU;
+//
+//                System.out.println("Returning to main menu...");
+//                //break; // Break out of the loop to simulate transition
+//            }
 
-
-                long startTime = System.currentTimeMillis();
-                while (System.currentTimeMillis() - startTime < 4000) {
-                    // Updatam bufferul pt ca mesajul sa ramana vizibil
-                    bs = wnd.GetCanvas().getBufferStrategy();
-                    g = bs.getDrawGraphics();
-                   // wnd.showLossMessage(g);
-                    bs.show();
-                    g.dispose();
-                }
-
-                // Resetam viata pentru a nu ne bloca in mesajul de loss
-                player.setHealth(100);
-                Game.state = Game.GAME_STATE.MENU;
-
-                System.out.println("Returning to main menu...");
-                //break; // Break out of the loop to simulate transition
-            }
-
-            if(enemy1 !=null&& enemy1.getHealth()<=0){
-                //wnd.showWinningMessage(g);
-                bs.show();
-                g.dispose();
-
-
-                long startTime = System.currentTimeMillis();
-                while (System.currentTimeMillis() - startTime < 4000) {
-                    // Updatam bufferul pt ca mesajul sa ramana vizibil
-                    bs = wnd.GetCanvas().getBufferStrategy();
-                    g = bs.getDrawGraphics();
-                  //  wnd.showWinningMessage(g);
-                    bs.show();
-                    g.dispose();
-                }
-
-                // Resetam viata pentru a nu ne bloca in mesajul de loss
-                enemy1 =null;
-                Game.state = Game.currentLevel;
-
-                System.out.println("Returning to the level...");
-                //break; // Break out of the loop to simulate transition
-            }
-            if(e2!=null&&e2.getHealth()<=0){
-               // wnd.showWinningMessage(g);
-                bs.show();
-                g.dispose();
-
-
-                long startTime = System.currentTimeMillis();
-                while (System.currentTimeMillis() - startTime < 4000) {
-                    // Updatam bufferul pt ca mesajul sa ramana vizibil
-                    bs = wnd.GetCanvas().getBufferStrategy();
-                    g = bs.getDrawGraphics();
-                   // wnd.showWinningMessage(g);
-                    bs.show();
-                    g.dispose();
-                }
-
-                // Resetam viata pentru a nu ne bloca in mesajul de loss
-                e2=null;
-                Game.state = Game.currentLevel;
-
-                System.out.println("Returning to the level...");
-                //break; // Break out of the loop to simulate transition
-            }
 
         }
 
@@ -384,15 +341,27 @@ public class Game implements Runnable,KeyListener, MouseListener
             }
             camera.centerOnEntity(player);
             //g.translate((int) camera.getX(), (int) camera.getY());
-        }else if (state == GAME_STATE.MENU || state == GAME_STATE.LEVEL_SELECTION) {
-            g.drawImage(Assets.background, 0, 0, GameWindow.getWidth(),GameWindow.getHeight(), null);
+        }else if (state == GAME_STATE.MENU) {
+            //  g.drawImage(Assets.background, 0, 0, GameWindow.getWidth(),GameWindow.getHeight(), null);
             camera.backToZero();
-            MainMenu.render(g);
+            //      MainMenu.render(g);
+            if (menu == null || !isInMenu) {
+                menu = MainMenu.getInstance();
+                menu.render();
+                isInMenu = true;
+                System.out.println("We are redrawing");
+            }
+        }else if (state == GAME_STATE.LEVEL_SELECTION){
+            camera.backToZero();
+            if (!isInLevelSelection){
+                MainMenu.LevelSelection.render();
+                isInLevelSelection = true;
+            }
         }else if (state==GAME_STATE.CHAR_CREATION){
 
             if(!isCreatingChar) {
                 isCreatingChar = true;
-                creation = new CharacterCreation();
+                creation = CharacterCreation.getInstance();
                 creation.render();
             }else{
               //  state=GAME_STATE.LEVEL_SELECTION;

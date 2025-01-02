@@ -383,4 +383,5 @@ public class Player {
     public void setCurrentFrame(int newFrame){
         currentFrame=newFrame;
     }
+
 }

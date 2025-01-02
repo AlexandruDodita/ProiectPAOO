@@ -20,7 +20,10 @@ public class CharacterCreation{
     private Graphics g;
     private JPanel backgroundPanel;
     private JFrame wnd;
-    public CharacterCreation() {
+
+    private static final CharacterCreation instance = new CharacterCreation();
+
+    private CharacterCreation() {
         g=Game.getGraphicalContext();
         GameWindow gameWindow = Game.getGameWnd();
         wnd = gameWindow.getWndFrame();
@@ -99,8 +102,8 @@ public class CharacterCreation{
         createCharBtt.setBackground(Color.LIGHT_GRAY);
         createCharBtt.addActionListener(e -> {
             Game.isCreatingChar = false;
-            Game.state= Game.GAME_STATE.LEVEL_SELECTION;
-       //     wnd.dispose();
+            Game.state= Game.GAME_STATE.MENU;
+           // wnd.dispose();
             wnd.setContentPane(Game.getGameWnd().getContentPane());
         });
         panelSouth.add(createCharBtt);
@@ -175,6 +178,8 @@ public class CharacterCreation{
         }
     }
 
-
+    public static CharacterCreation getInstance(){
+        return instance;
+    }
 
 }
